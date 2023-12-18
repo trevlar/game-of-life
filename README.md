@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+# Conways Game of Life
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This React front end application implements a simulation of [Conway’s Game of Life Conway's Game of Life - Wikipedia](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
-## Available Scripts
+The UI has fulfilled the following requirements: 
 
-In the project directory, you can run:
+[x] A board that allows turning on and off squares 
+[x] A way to advance to the next state 
+[x] A way to play forever the next states 
+[x] A way to advance x number of states 
 
-### `npm start`
+The following additional requirements have been implemented:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+[x] The edges of the board wrap to the other side
+[x] A way to set the speed of the play through
+[x] A way to set the size of the board
+[x] A way to reset or clear the board
+[x] A way to track the number of generations since the board was created
+[x] A mobile friendly UI
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Additional requirements not implemented:
 
-### `npm test`
+[ ] A way to save and load a board
+[ ] A mobile friendly painting UX
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+With a normal web service there might be an API, but the React app should take the place of the API. Include all code to simulate the Game of Life but treat that code as if it were going to be called from an API. Do not implement a backend API, unless you want to. 
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This could take four to five hours. The implementation should be production ready. You don’t need to implement any authentication/authorization. Be ready to discuss your solution. 
