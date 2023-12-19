@@ -11,18 +11,19 @@ The UI has fulfilled the following requirements:
 
 The following additional requirements have been implemented:
 
-[x] The edges of the board wrap to the other side
+[x] The board uses a toroidal structure such that the edges board wrap to the other side.
 [x] A way to set the speed of the play through
 [x] A way to set the size of the board
 [x] A way to reset or clear the board
 [x] A way to track the number of generations since the board was created
+[x] A way to save and load the board from an API
 [x] A mobile friendly UI
 
 Additional requirements not implemented:
 
-[ ] A way to save and load a board
+[ ] Fix switch to continuous to retain live cells in proper positions.
 [ ] A mobile friendly painting UX
 
 With a normal web service there might be an API, but the React app should take the place of the API. Include all code to simulate the Game of Life but treat that code as if it were going to be called from an API. Do not implement a backend API, unless you want to. 
 
-This could take four to five hours. The implementation should be production ready. You don’t need to implement any authentication/authorization. Be ready to discuss your solution. 
+The implementation should be production ready. You don’t need to implement any authentication/authorization. Be ready to discuss your solution. 

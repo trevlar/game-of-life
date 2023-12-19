@@ -1,13 +1,23 @@
-import { Center, SegmentedControl, rem, Stack, NumberInput } from '@mantine/core';
+import {
+  Center,
+  SegmentedControl,
+  rem,
+  Stack,
+  NumberInput,
+  Switch,
+  useMantineTheme,
+  Button,
+} from '@mantine/core';
 import {
   IconPlayerPlay,
   IconPlayerPlayFilled,
   IconPlayerTrackNextFilled,
+  IconTrashFilled,
 } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../app/hooks';
-import { setGameSpeed, setBoardSize } from '../gameSlice';
+import { setGameSpeed, setBoardSize, setContinuousEdges, clearBoard } from '../gameSlice';
 
 const SPEEDS = [
   {
@@ -41,7 +51,8 @@ const SPEEDS = [
 
 const GameSettings = () => {
   const dispatch = useDispatch();
-  const { gameSpeed, boardSize } = useAppSelector((state) => state.game);
+  const theme = useMantineTheme();
+  const { gameSpeed, boardSize, continuousEdges } = useAppSelector((state) => state.game);
   const handleSpeedChange = (value: string) => {
     dispatch(setGameSpeed({ gameSpeed: value }));
   };
@@ -61,6 +72,19 @@ const GameSettings = () => {
         step={1}
       />
       <SegmentedControl value={gameSpeed} onChange={handleSpeedChange} data={SPEEDS} />
+      <Switch
+        label="Continuous Edges"
+        checked={continuousEdges}
+        onChange={() => dispatch(setContinuousEdges({ continuousEdges: !continuousEdges }))}
+        color={theme.colors.blue[5]}
+      />
+      <Button
+        variant="default"
+        onClick={() => dispatch(clearBoard())}
+        leftSection={<IconTrashFilled />}
+      >
+        Reset Board
+      </Button>
     </Stack>
   );
 };

@@ -14,27 +14,34 @@ const getNeighborIndices = (
   rowIndex: number,
   cellIndex: number,
   rowOffset: number,
-  cellOffset: number
+  cellOffset: number,
+  wrapAround: boolean
 ) => {
   let neighborRow = rowIndex + rowOffset;
   let neighborCell = cellIndex + cellOffset;
 
-  // handle other side of board.
-  if (neighborRow < 0) {
-    neighborRow = board.length - 1;
-  } else if (neighborRow >= board.length) {
-    neighborRow = 0;
-  }
-  if (neighborCell < 0) {
-    neighborCell = board[0].length - 1;
-  } else if (neighborCell >= board[0].length) {
-    neighborCell = 0;
+  if (wrapAround) {
+    if (neighborRow < 0) {
+      neighborRow = board.length - 1;
+    } else if (neighborRow >= board.length) {
+      neighborRow = 0;
+    }
+    if (neighborCell < 0) {
+      neighborCell = board[0].length - 1;
+    } else if (neighborCell >= board[0].length) {
+      neighborCell = 0;
+    }
   }
 
   return [neighborRow, neighborCell];
 };
 
-const getLivingNeighbors = (board: boolean[][], rowIndex: number, cellIndex: number) => {
+const getLivingNeighbors = (
+  board: boolean[][],
+  rowIndex: number,
+  cellIndex: number,
+  wrapAround: boolean
+) => {
   // check each direction to count the number of living cells surrounding this cell
   return directions.reduce((acc, [rowOffset, cellOffset]) => {
     const [neighborRow, neighborCell] = getNeighborIndices(
@@ -42,10 +49,14 @@ const getLivingNeighbors = (board: boolean[][], rowIndex: number, cellIndex: num
       rowIndex,
       cellIndex,
       rowOffset,
-      cellOffset
+      cellOffset,
+      wrapAround
     );
 
-    if (board[neighborRow][neighborCell]) {
+    // TODO: Behavior should persist mutations
+    // consider living cells as dead
+    // when the entire connected structure is off the board.
+    if (board?.[neighborRow]?.[neighborCell]) {
       acc++;
     }
 
@@ -69,12 +80,17 @@ const canReproduce = (livingNeighborCount: number) => {
   return livingNeighborCount === 3;
 };
 
-export const processNextGeneration = (board: boolean[][], boardSize: number) => {
+export const processNextGeneration = (
+  board: boolean[][],
+  boardSize: number,
+  wrapAround: boolean
+) => {
   const newBoard: boolean[][] = board.map((row) => [...row]);
 
   for (let i = 0; i < boardSize; i++) {
     for (let j = 0; j < boardSize; j++) {
-      const livingNeighbors = getLivingNeighbors(board, i, j);
+      const livingNeighbors = getLivingNeighbors(board, i, j, wrapAround);
+
       if (board[i][j]) {
         // 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
         if (isUnderpopulated(livingNeighbors)) {
@@ -95,29 +111,17 @@ export const processNextGeneration = (board: boolean[][], boardSize: number) => 
     }
   }
 
-  // board.forEach((row, rowIndex) => {
-  //   row.forEach((isLiving, cellIndex) => {
-  //     const livingNeighbors = getLivingNeighbors(board, rowIndex, cellIndex);
-  //     if (isLiving) {
-  //       // 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-  //       if (isUnderpopulated(livingNeighbors)) {
-  //         newBoard[rowIndex][cellIndex] = false;
-  //       }
-  //       // 2. Any live cell with two or three live neighbours lives on to the next generation.
-  //       if (isLivingOn(livingNeighbors)) {
-  //         newBoard[rowIndex][cellIndex] = true;
-  //       }
-  //       // 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
-  //       else if (isOverpopulated(livingNeighbors)) {
-  //         newBoard[rowIndex][cellIndex] = false;
-  //       }
-  //     } else if (canReproduce(livingNeighbors)) {
-  //       // 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-  //       newBoard[rowIndex][cellIndex] = true;
-  //     }
-  //   });
-  // });
+  return newBoard;
+};
 
+export const trimToVisibleBoard = (board: boolean[][], boardSize: number) => {
+  const extendedSize = board.length;
+  const startOffset = Math.floor((extendedSize - boardSize) / 2);
+
+  const newBoard: boolean[][] = [];
+  for (let i = startOffset; i < startOffset + boardSize; i++) {
+    newBoard.push(board[i].slice(startOffset, startOffset + boardSize));
+  }
   return newBoard;
 };
 
@@ -127,4 +131,15 @@ export const buildBoard = (size: number) => {
     board.push(Array(size).fill(false));
   }
   return board;
+};
+
+export const getLivingCellCount = (board: boolean[][]) => {
+  return board.reduce((acc, row) => {
+    return (
+      acc +
+      row.reduce((acc, cell) => {
+        return acc + (cell ? 1 : 0);
+      }, 0)
+    );
+  }, 0);
 };

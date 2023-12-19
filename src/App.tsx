@@ -1,6 +1,8 @@
+import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import {
   AppShell,
+  Center,
   Group,
   Menu,
   ScrollArea,
@@ -20,8 +22,6 @@ import GameControls from './game/components/GameControls';
 import GameSettings from './game/components/GameSettings';
 import { togglePlay, nextGeneration } from './game/gameSlice';
 
-// const defaultBoard = buildBoard(38);
-
 const gameSpeeds = {
   slow: 1000,
   normal: 300,
@@ -30,11 +30,11 @@ const gameSpeeds = {
 
 function App() {
   const dispatch = useAppDispatch();
-  const { gameSpeed, generations, isPlaying } = useAppSelector((state) => state.game);
+  const { gameSpeed, generations, isPlaying, livingCells } = useAppSelector((state) => state.game);
 
   const interval = useInterval(() => {
     try {
-      dispatch(nextGeneration({ steps: 1 }));
+      dispatch(nextGeneration());
     } catch (error) {
       dispatch(togglePlay());
       console.error('error while running mutation', error);
@@ -120,9 +120,16 @@ function App() {
 
       <AppShell.Main>
         <Stack>
-          <Text size="xl" weight={700} align="center">
-            {generations} Generations
-          </Text>
+          <Center>
+            <Group>
+              <Text size="xl" weight={700} align="center">
+                {generations} Generations
+              </Text>
+              <Text size="xl" weight={700} align="center">
+                {livingCells} Living Cells
+              </Text>
+            </Group>
+          </Center>
           <ScrollArea
             type="always"
             w="calc(100vw - 32px)"
