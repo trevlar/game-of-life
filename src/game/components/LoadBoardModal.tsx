@@ -5,7 +5,7 @@ import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { AppDispatch, RootState } from '../../app/store';
-import { loadBoards, selectBoard } from '../gameSlice';
+import { loadBoards, selectBoard } from '../gameApiActions';
 
 interface LoadBoardModalProps {
   showModal: boolean;

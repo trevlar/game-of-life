@@ -5,7 +5,8 @@ import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { AppDispatch, RootState } from '../../app/store';
-import { setTitle, setDescription, saveBoard } from '../gameSlice';
+import { saveBoard } from '../gameApiActions';
+import { setTitle, setDescription } from '../gameSlice';
 
 interface SaveBoardModalProps {
   showModal: boolean;
