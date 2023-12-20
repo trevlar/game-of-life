@@ -23,9 +23,9 @@ import GameSettings from './game/components/GameSettings';
 import { togglePlay, nextGeneration } from './game/gameSlice';
 
 const gameSpeeds = {
-  slow: 1000,
-  normal: 300,
-  fast: 150,
+  slow: 200,
+  normal: 100,
+  fast: 50,
 };
 
 function App() {
