@@ -30,7 +30,6 @@ export interface SavedGame {
   settings?: SettingsPayload;
   // deprecated
   board?: boolean[][];
-  virtualBoard?: boolean[][];
 }
 
 export interface GamePayload {

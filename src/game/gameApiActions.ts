@@ -42,7 +42,6 @@ export const saveBoard = createAsyncThunk<
     board: gameState.board,
     generations: gameState.generations,
     isPlaying: gameState.isPlaying,
-    virtualBoard: gameState.virtualBoard,
     livingCells: gameState.livingCells,
     livingCellCount: gameState.livingCellCount,
     settings: {
