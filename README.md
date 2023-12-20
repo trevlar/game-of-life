@@ -26,6 +26,4 @@ Additional requirements not implemented:
 
 [ ] A mobile friendly painting UX
 
-With a normal web service there might be an API, but the React app should take the place of the API. Include all code to simulate the Game of Life but treat that code as if it were going to be called from an API. Do not implement a backend API, unless you want to. 
-
-The implementation should be production ready. You don’t need to implement any authentication/authorization. Be ready to discuss your solution. 
+I've built a web service in Golang for the API that uses a SQLite database. The API implements a save and load functionality that is not required by the react front end. The API is called from a Redux thunk. The API is not deployed to a server, but the code is included in the repo.
