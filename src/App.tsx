@@ -30,7 +30,9 @@ const gameSpeeds = {
 
 function App() {
   const dispatch = useAppDispatch();
-  const { gameSpeed, generations, isPlaying, livingCells } = useAppSelector((state) => state.game);
+  const { gameSpeed, generations, isPlaying, livingCellCount } = useAppSelector(
+    (state) => state.game
+  );
 
   const interval = useInterval(() => {
     try {
@@ -126,7 +128,7 @@ function App() {
                 {generations} Generations
               </Text>
               <Text size="xl" weight={700} align="center">
-                {livingCells} Living Cells
+                {livingCellCount} Living Cells
               </Text>
             </Group>
           </Center>

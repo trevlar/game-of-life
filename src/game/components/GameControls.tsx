@@ -1,6 +1,7 @@
-import { Button, ButtonGroup, Slider, Text, em } from '@mantine/core';
+import { Button, ButtonGroup, Menu, Slider, Text, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
+  IconCaretDown,
   IconDeviceFloppy,
   IconDownload,
   IconPlayerPlayFilled,
@@ -11,7 +12,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../app/hooks';
-import { nextGeneration, setGenerationsPerAdvance } from '../gameSlice';
+import { nextGeneration, setGenerationsPerAdvance, resetSaveData } from '../gameSlice';
 
 import LoadBoardModal from './LoadBoardModal';
 import SaveBoardModal from './SaveBoardModal';
@@ -25,6 +26,13 @@ const GameControls = () => {
   };
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+
+  const handleShowSaveModal = (isNew = false) => {
+    setShowSaveModal(true);
+    if (isNew) {
+      dispatch(resetSaveData());
+    }
+  };
 
   const handleSetGenerationsPerAdvance = (value: number) => {
     dispatch(setGenerationsPerAdvance({ generationsPerAdvance: value }));
@@ -59,10 +67,21 @@ const GameControls = () => {
         <Button
           variant="outline"
           leftSection={<IconDeviceFloppy />}
-          onClick={() => setShowSaveModal(true)}
+          onClick={() => handleShowSaveModal()}
         >
           Save
         </Button>
+        <Menu>
+          <Menu.Target>
+            <Button variant="outline">
+              <IconCaretDown />
+            </Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
         <Button
           variant="outline"
           leftSection={<IconDownload />}

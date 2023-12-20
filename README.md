@@ -18,10 +18,12 @@ The following additional requirements have been implemented:
 [x] A way to track the number of generations since the board was created
 [x] A way to save and load the board from an API
 [x] A mobile friendly UI
+[x] Switch to continuous edges retains live cells in proper positions.
+[x] Board size changes to retain live cells in proper positions.
+[x] Performance gains by tracking primarily live cells and their neighbors.
 
 Additional requirements not implemented:
 
-[ ] Fix switch to continuous and board size to retain live cells in proper positions.
 [ ] A mobile friendly painting UX
 
 With a normal web service there might be an API, but the React app should take the place of the API. Include all code to simulate the Game of Life but treat that code as if it were going to be called from an API. Do not implement a backend API, unless you want to. 

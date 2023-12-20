@@ -3,10 +3,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GameState, GamePayload, SettingsPayload } from '../common/types';
 
 import {
-  buildBoard,
-  getLivingCellCount,
-  processNextGeneration,
-  trimToVisibleBoard,
+  convertBoardToLiveCells,
+  processNextGenByLiveCellsAndNeighbors,
+  trimLiveCellsToSize,
+  countLivingCellsInBoard,
 } from './gameLogic';
 
 const defaultBoardSize = 38;
@@ -15,15 +15,15 @@ const virtualBoardSizeOffset = 40;
 const initialState: GameState = {
   title: '',
   description: '',
-  board: buildBoard(defaultBoardSize),
-  virtualBoard: buildBoard(defaultBoardSize + virtualBoardSizeOffset),
+  livingCells: [],
   generations: 0,
   isPlaying: false,
-  boardSize: 38,
+  boardSize: defaultBoardSize,
+  virtualBoardSize: defaultBoardSize + virtualBoardSizeOffset,
   gameSpeed: 'normal',
   continuousEdges: false,
   generationsPerAdvance: 1,
-  livingCells: 0,
+  livingCellCount: 0,
   boardList: [],
 };
 
@@ -36,86 +36,73 @@ export const gameSlice = createSlice({
     },
     nextGeneration: (state) => {
       const steps = state.generationsPerAdvance || 1;
-      if (state.livingCells === 0) {
+
+      if (state.livingCells.length === 0) {
         state.generations += steps;
         console.log('no living cells to process');
         return;
       }
 
-      const { board, virtualBoard, boardSize, continuousEdges } = state;
-
-      let nextBoard = continuousEdges
-        ? board.map((row) => [...row])
-        : virtualBoard.map((row) => [...row]);
+      const { livingCells, boardSize, continuousEdges } = state;
+      let newLiveCells = new Set(livingCells);
       for (let i = 0; i < steps; i++) {
-        if (continuousEdges) {
-          nextBoard = processNextGeneration(nextBoard, boardSize, continuousEdges);
-        } else {
-          nextBoard = processNextGeneration(
-            nextBoard,
-            boardSize + virtualBoardSizeOffset,
-            continuousEdges
-          );
-        }
+        newLiveCells = processNextGenByLiveCellsAndNeighbors(
+          newLiveCells,
+          boardSize,
+          continuousEdges
+        );
       }
+      state.livingCells = Array.from(newLiveCells);
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells, boardSize);
 
-      if (continuousEdges) {
-        state.board = nextBoard;
-        state.livingCells = getLivingCellCount(board);
-      } else {
-        state.virtualBoard = nextBoard;
-        state.board = trimToVisibleBoard(nextBoard, boardSize);
-        state.livingCells = getLivingCellCount(board);
-        if (state.livingCells === 0) {
-          state.virtualBoard = buildBoard(boardSize + virtualBoardSizeOffset);
-        }
-      }
       state.generations += steps;
     },
     setSelectedBoard: (state, action: PayloadAction<{ game: any }>) => {
       const game = action.payload.game;
+      state.id = game.id;
       state.title = game.title;
       state.description = game.description;
-      state.board = game.board;
-      state.virtualBoard = game.virtualBoard;
+      state.livingCells = game.livingCells || convertBoardToLiveCells(game.board);
       state.generations = game.generations;
       state.isPlaying = game.isPlaying;
       state.boardSize = game.settings.boardSize;
       state.gameSpeed = game.settings.gameSpeed;
       state.continuousEdges = game.settings.wrapAround;
       state.generationsPerAdvance = game.settings.generationsPerAdvance;
-      state.livingCells = game.livingCells;
+      state.livingCellCount = game.settings.livingCellCount;
+    },
+    resetSaveData: (state) => {
+      state.id = null;
+      state.title = state.title + ' (copy)';
     },
     clearBoard: (state) => {
-      state.virtualBoard = buildBoard(state.boardSize + virtualBoardSizeOffset);
-      state.board = buildBoard(state.boardSize);
-      state.generations = 0;
-      state.livingCells = 0;
       state.id = null;
+      state.title = '';
+      state.description = '';
+      state.livingCells = [];
+      state.generations = 0;
+      state.livingCellCount = 0;
     },
     setBoardAtLocation: (state, action: PayloadAction<GamePayload>) => {
       const { row, col } = action.payload.cell || { row: 0, col: 0 };
-      const isLiving = state.board[row][col];
-      state.board[row][col] = !isLiving;
 
-      if (!state.continuousEdges) {
-        const extendedSize = state.virtualBoard.length;
-        const startOffset = Math.floor((extendedSize - state.boardSize) / 2);
-
-        const offsetRow = row + startOffset;
-        const offsetCol = col + startOffset;
-        state.virtualBoard[offsetRow][offsetCol] = !isLiving;
+      if (state.livingCells.includes(`${col},${row}`)) {
+        const newCells = state.livingCells.filter((cell) => cell !== `${col},${row}`);
+        state.livingCells = [...newCells];
+        state.livingCellCount = state.livingCellCount - 1;
+      } else {
+        state.livingCells = [...state.livingCells, `${col},${row}`];
+        state.livingCellCount = state.livingCellCount + 1;
       }
-      state.livingCells = state.livingCells + (isLiving ? -1 : 1);
     },
     setGameSpeed: (state, action: PayloadAction<SettingsPayload>) => {
       state.gameSpeed = action.payload.gameSpeed || 'normal';
     },
     setBoardSize: (state, action: PayloadAction<SettingsPayload>) => {
       state.boardSize = action.payload.boardSize || defaultBoardSize;
-      state.board = buildBoard(state.boardSize);
-      state.virtualBoard = buildBoard(state.boardSize + virtualBoardSizeOffset);
       state.generations = 0;
+      state.livingCells = trimLiveCellsToSize(state.livingCells, state.boardSize);
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
       state.continuousEdges = action.payload.continuousEdges || false;
@@ -139,19 +126,20 @@ export const gameSlice = createSlice({
 });
 
 export const {
-  setBoardSize,
-  setSelectedBoard,
-  setBoardAtLocation,
-  setGameSpeed,
-  togglePlay,
-  nextGeneration,
   clearBoard,
-  setContinuousEdges,
-  setGenerationsPerAdvance,
-  setTitle,
-  setDescription,
+  nextGeneration,
+  resetSaveData,
+  setBoardAtLocation,
   setBoardId,
   setBoards,
+  setBoardSize,
+  setContinuousEdges,
+  setDescription,
+  setGameSpeed,
+  setGenerationsPerAdvance,
+  setSelectedBoard,
+  setTitle,
+  togglePlay,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

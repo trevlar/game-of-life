@@ -1,3 +1,5 @@
+import { Cell } from '../common/types';
+
 const directions = [
   [-1, -1], // top left
   [-1, 0], // top
@@ -8,61 +10,6 @@ const directions = [
   [1, -1], // bottom left
   [0, -1], // left
 ];
-
-const getNeighborIndices = (
-  board: boolean[][],
-  rowIndex: number,
-  cellIndex: number,
-  rowOffset: number,
-  cellOffset: number,
-  wrapAround: boolean
-) => {
-  let neighborRow = rowIndex + rowOffset;
-  let neighborCell = cellIndex + cellOffset;
-
-  if (wrapAround) {
-    if (neighborRow < 0) {
-      neighborRow = board.length - 1;
-    } else if (neighborRow >= board.length) {
-      neighborRow = 0;
-    }
-    if (neighborCell < 0) {
-      neighborCell = board[0].length - 1;
-    } else if (neighborCell >= board[0].length) {
-      neighborCell = 0;
-    }
-  }
-
-  return [neighborRow, neighborCell];
-};
-
-const getLivingNeighbors = (
-  board: boolean[][],
-  rowIndex: number,
-  cellIndex: number,
-  wrapAround: boolean
-) => {
-  // check each direction to count the number of living cells surrounding this cell
-  return directions.reduce((acc, [rowOffset, cellOffset]) => {
-    const [neighborRow, neighborCell] = getNeighborIndices(
-      board,
-      rowIndex,
-      cellIndex,
-      rowOffset,
-      cellOffset,
-      wrapAround
-    );
-
-    // TODO: Behavior should persist mutations
-    // consider living cells as dead
-    // when the entire connected structure is off the board.
-    if (board?.[neighborRow]?.[neighborCell]) {
-      acc++;
-    }
-
-    return acc;
-  }, 0);
-};
 
 const isUnderpopulated = (livingNeighborCount: number) => {
   return livingNeighborCount < 2;
@@ -80,66 +27,168 @@ const canReproduce = (livingNeighborCount: number) => {
   return livingNeighborCount === 3;
 };
 
-export const processNextGeneration = (
-  board: boolean[][],
+const getNeighborIndexes = (
+  cell: Cell,
   boardSize: number,
+  rowOffset: number,
+  cellOffset: number,
   wrapAround: boolean
 ) => {
-  const newBoard: boolean[][] = board.map((row) => [...row]);
+  let neighborCell = cell.x + cellOffset;
+  let neighborRow = cell.y + rowOffset;
 
-  for (let i = 0; i < boardSize; i++) {
-    for (let j = 0; j < boardSize; j++) {
-      const livingNeighbors = getLivingNeighbors(board, i, j, wrapAround);
-
-      if (board[i][j]) {
-        // 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-        if (isUnderpopulated(livingNeighbors)) {
-          newBoard[i][j] = false;
-        }
-        // 2. Any live cell with two or three live neighbours lives on to the next generation.
-        if (isLivingOn(livingNeighbors)) {
-          newBoard[i][j] = true;
-        }
-        // 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
-        else if (isOverpopulated(livingNeighbors)) {
-          newBoard[i][j] = false;
-        }
-      } else if (canReproduce(livingNeighbors)) {
-        // 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-        newBoard[i][j] = true;
-      }
+  if (wrapAround) {
+    if (neighborRow < 0) {
+      neighborRow = boardSize - 1;
+    } else if (neighborRow >= boardSize) {
+      neighborRow = 0;
+    }
+    if (neighborCell < 0) {
+      neighborCell = boardSize - 1;
+    } else if (neighborCell >= boardSize) {
+      neighborCell = 0;
     }
   }
 
-  return newBoard;
+  return [neighborRow, neighborCell];
 };
 
-export const trimToVisibleBoard = (board: boolean[][], boardSize: number) => {
-  const extendedSize = board.length;
-  const startOffset = Math.floor((extendedSize - boardSize) / 2);
-
-  const newBoard: boolean[][] = [];
-  for (let i = startOffset; i < startOffset + boardSize; i++) {
-    newBoard.push(board[i].slice(startOffset, startOffset + boardSize));
-  }
-  return newBoard;
-};
-
-export const buildBoard = (size: number) => {
-  const board: boolean[][] = [];
-  for (let i = 0; i < size; i++) {
-    board.push(Array(size).fill(false));
-  }
-  return board;
-};
-
-export const getLivingCellCount = (board: boolean[][]) => {
-  return board.reduce((acc, row) => {
-    return (
-      acc +
-      row.reduce((acc, cell) => {
-        return acc + (cell ? 1 : 0);
-      }, 0)
+function getLivingNeighborCount(
+  cell: Cell,
+  liveCells: Set<string>,
+  boardSize: number,
+  wrapAround: boolean
+): number {
+  return directions.reduce((neighborCount, [rowOffset, cellOffset]) => {
+    const [neighborRow, neighborCell] = getNeighborIndexes(
+      cell,
+      boardSize,
+      rowOffset,
+      cellOffset,
+      wrapAround
     );
+
+    const neighborCellKey = `${neighborCell},${neighborRow}`;
+    if (liveCells.has(neighborCellKey)) {
+      return neighborCount + 1;
+    }
+    return neighborCount;
   }, 0);
+}
+
+/**
+ * This function processes the next generation of the board based on the current state of the board.
+ * We are only storing the live cells in the board, so we need to process those cells and their neighbors.
+ * @param board This is the board that is being processed
+ * @param boardSize This is the size of the board.  It is assumed that the board is square.
+ * @param wrapAround This is a boolean that indicates whether the board wraps around the edges.
+ */
+export const processNextGenByLiveCellsAndNeighbors = (
+  liveCells: Set<string>,
+  boardSize: number,
+  wrapAround: boolean
+) => {
+  const newLiveCells = new Set<string>();
+  const consideredCells = new Set<string>();
+
+  liveCells.forEach((liveCell) => {
+    const [x, y] = liveCell.split(',').map(Number);
+    const cell = { x, y };
+
+    directions.forEach(([rowOffset, cellOffset]) => {
+      const [neighborRow, neighborCell] = getNeighborIndexes(
+        cell,
+        boardSize,
+        rowOffset,
+        cellOffset,
+        wrapAround
+      );
+
+      if (
+        neighborRow < 0 - 20 ||
+        neighborRow > boardSize + 20 ||
+        neighborCell < 0 - 20 ||
+        neighborCell > boardSize + 20
+      ) {
+        return;
+      }
+
+      const neighborCellKey = `${neighborCell},${neighborRow}`;
+      if (consideredCells.has(neighborCellKey)) {
+        return;
+      }
+      consideredCells.add(neighborCellKey);
+
+      const livingNeighborCount = getLivingNeighborCount(
+        { x: neighborCell, y: neighborRow },
+        liveCells,
+        boardSize,
+        wrapAround
+      );
+
+      if (liveCells.has(neighborCellKey)) {
+        if (isUnderpopulated(livingNeighborCount)) {
+          return;
+        }
+
+        if (isLivingOn(livingNeighborCount)) {
+          newLiveCells.add(neighborCellKey);
+          return;
+        }
+
+        if (isOverpopulated(livingNeighborCount)) {
+          return;
+        }
+      } else if (canReproduce(livingNeighborCount)) {
+        newLiveCells.add(neighborCellKey);
+      }
+    });
+  });
+
+  return newLiveCells;
+};
+
+export const convertBoardToLiveCells = (board: boolean[][]) => {
+  const liveCells = new Set<string>();
+  board.forEach((row, rowIndex) => {
+    row.forEach((cell, cellIndex) => {
+      if (cell) {
+        liveCells.add(`${cellIndex},${rowIndex}`);
+      }
+    });
+  });
+  return Array.from(liveCells);
+};
+
+/**
+ * This function will trim the board to the visible board. It will remove equal rows and columns from the live cells that are beyond the bounds of the newly sized board.
+ * @param liveCells The set of live cells that are being trimmed
+ * @param boardSize The size of the board
+ * @returns A new set of live cells that are within the bounds of the board
+ */
+export const trimLiveCellsToSize = (liveCells: string[], boardSize: number) => {
+  const trimmedLiveCells = [];
+
+  liveCells.forEach((liveCell) => {
+    const [x, y] = liveCell.split(',').map(Number);
+
+    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+      trimmedLiveCells.push(liveCell);
+    }
+  });
+
+  return trimmedLiveCells;
+};
+
+export const countLivingCellsInBoard = (liveCells: string[], boardSize: number) => {
+  let livingCellCount = 0;
+  liveCells.forEach((liveCell) => {
+    const [x, y] = liveCell.split(',').map(Number);
+
+    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+      livingCellCount++;
+    }
+  });
+
+  return livingCellCount;
 };

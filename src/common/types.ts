@@ -2,28 +2,35 @@ export interface GameState {
   id?: string;
   title: string;
   description: string;
-  board: boolean[][];
-  virtualBoard: boolean[][];
+  livingCells: string[];
   generations: number;
   isPlaying: boolean;
   boardSize: number;
+  virtualBoardSize: number;
   gameSpeed: string;
   continuousEdges: boolean;
   generationsPerAdvance: number;
-  livingCells: number;
+  livingCellCount: number;
   boardList: SavedGame[];
 }
+
+export type Cell = {
+  x: number;
+  y: number;
+};
 
 export interface SavedGame {
   id: string;
   title: string;
-  board?: boolean[][];
-  virtualBoard?: boolean[][];
   description: string;
+  livingCells: string[];
   generations: number;
   isPlaying: boolean;
-  livingCells: number;
+  livingCellCount: number;
   settings?: SettingsPayload;
+  // deprecated
+  board?: boolean[][];
+  virtualBoard?: boolean[][];
 }
 
 export interface GamePayload {

@@ -26,7 +26,7 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
     gameSpeed,
     continuousEdges,
     generationsPerAdvance,
-    livingCells,
+    livingCellCount,
   } = useSelector((state: RootState) => state.game);
 
   const [titleValue, setTitleValue] = useState(title);
@@ -66,7 +66,7 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
         <Text>Game Speed: {gameSpeed}</Text>
         <Text>Continuous Edges: {continuousEdges ? 'Yes' : 'No'}</Text>
         <Text>Generations Per Advance: {generationsPerAdvance}</Text>
-        <Text>Living Cells: {livingCells}</Text>
+        <Text>Living Cells: {livingCellCount}</Text>
       </Card>
 
       <Group position="right" justify="flex-end">

@@ -1,5 +1,5 @@
 import { Center, Group, Paper, Stack } from '@mantine/core';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../app/hooks';
@@ -7,18 +7,22 @@ import { setBoardAtLocation } from '../gameSlice';
 
 function GameBoard() {
   const dispatch = useDispatch();
-  const { board } = useAppSelector((state) => state.game);
+  const { boardSize, livingCells } = useAppSelector((state) => state.game);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [cursorStyle, setCursorStyle] = useState({});
 
-  const setIsLiving = (row: number, col: number) => {
+  const board = useMemo(() => {
+    return Array.from({ length: boardSize }, () => Array.from({ length: boardSize }, () => false));
+  }, [boardSize]);
+
+  const setIsLiving = (col: number, row: number) => {
     dispatch(setBoardAtLocation({ cell: { row, col } }));
   };
 
-  const handleMouseDown = (e, row: number, col: number) => {
+  const handleMouseDown = (e, col: number, row: number) => {
     e.preventDefault();
     setIsMouseDown(true);
-    setIsLiving(row, col);
+    setIsLiving(col, row);
     setCursorStyle({ cursor: 'default' });
   };
 
@@ -27,10 +31,10 @@ function GameBoard() {
     setCursorStyle({});
   };
 
-  const shouldToggleLiving = (e, row: number, col: number) => {
+  const shouldToggleLiving = (e, col: number, row: number) => {
     e.preventDefault();
     if (isMouseDown) {
-      setIsLiving(row, col);
+      setIsLiving(col, row);
     }
   };
 
@@ -54,13 +58,17 @@ function GameBoard() {
               draggable={false}
               style={{ flexWrap: 'nowrap' }}
             >
-              {row.map((isLiving, col) => (
+              {row.map((_, col) => (
                 <Paper
-                  onMouseDown={(e) => handleMouseDown(e, rowIndex, col)}
-                  onMouseEnter={(e) => shouldToggleLiving(e, rowIndex, col)}
+                  onMouseDown={(e) => handleMouseDown(e, col, rowIndex)}
+                  onMouseEnter={(e) => shouldToggleLiving(e, col, rowIndex)}
                   style={cursorStyle}
                   key={`${rowIndex}-${col}`}
-                  bg={isLiving ? 'black' : 'white'}
+                  bg={
+                    livingCells.length && livingCells.includes(`${col},${rowIndex}`)
+                      ? 'black'
+                      : 'white'
+                  }
                   w={20}
                   h={20}
                   radius="0"
