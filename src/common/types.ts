@@ -12,6 +12,7 @@ export interface GameState {
   generationsPerAdvance: number;
   livingCellCount: number;
   boardList: SavedGame[];
+  isSaveEnabled: boolean;
 }
 
 export type Cell = {

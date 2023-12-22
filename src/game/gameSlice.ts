@@ -25,6 +25,7 @@ const initialState: GameState = {
   generationsPerAdvance: 1,
   livingCellCount: 0,
   boardList: [],
+  isSaveEnabled: false,
 };
 
 export const gameSlice = createSlice({
@@ -122,6 +123,9 @@ export const gameSlice = createSlice({
     setBoards: (state, action: PayloadAction<{ boards: any[] }>) => {
       state.boardList = action.payload.boards;
     },
+    setSaveEnabled: (state, action: PayloadAction<{ isSaveEnabled: boolean }>) => {
+      state.isSaveEnabled = action.payload.isSaveEnabled;
+    },
   },
 });
 
@@ -140,6 +144,7 @@ export const {
   setSelectedBoard,
   setTitle,
   togglePlay,
+  setSaveEnabled,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

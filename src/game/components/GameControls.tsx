@@ -8,24 +8,30 @@ import {
   IconPlayerSkipForward,
   IconPlayerSkipForwardFilled,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../app/hooks';
+import { AppDispatch } from '../../app/store';
+import { checkApiConnection } from '../gameApiActions';
 import { nextGeneration, setGenerationsPerAdvance, resetSaveData } from '../gameSlice';
 
 import LoadBoardModal from './LoadBoardModal';
 import SaveBoardModal from './SaveBoardModal';
 
 const GameControls = () => {
-  const dispatch = useDispatch();
-  const { isPlaying, generationsPerAdvance } = useAppSelector((state) => state.game);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isPlaying, generationsPerAdvance, isSaveEnabled } = useAppSelector((state) => state.game);
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const handleMoveForward = () => {
     dispatch(nextGeneration());
   };
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+
+  useEffect(() => {
+    dispatch(checkApiConnection());
+  }, [dispatch]);
 
   const handleShowSaveModal = (isNew = false) => {
     setShowSaveModal(true);
@@ -68,12 +74,13 @@ const GameControls = () => {
           variant="outline"
           leftSection={<IconDeviceFloppy />}
           onClick={() => handleShowSaveModal()}
+          disabled={!isSaveEnabled}
         >
           Save
         </Button>
-        <Menu>
+        <Menu disabled={!isSaveEnabled}>
           <Menu.Target>
-            <Button variant="outline">
+            <Button variant="outline" disabled={!isSaveEnabled}>
               <IconCaretDown />
             </Button>
           </Menu.Target>
@@ -86,6 +93,7 @@ const GameControls = () => {
           variant="outline"
           leftSection={<IconDownload />}
           onClick={() => setShowLoadModal(true)}
+          disabled={!isSaveEnabled}
         >
           Load
         </Button>

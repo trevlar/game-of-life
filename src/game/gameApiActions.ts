@@ -3,9 +3,28 @@ import axios from 'axios';
 
 import { RootState } from '../app/store';
 
-import { setBoardId, setBoards, setSelectedBoard } from './gameSlice';
+import { setBoardId, setBoards, setSaveEnabled, setSelectedBoard } from './gameSlice';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+
+export const checkApiConnection = createAsyncThunk(
+  'boards/checkApiConnection',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/ping`);
+
+      console.log('response.data', response.data);
+      if (response.data === 'pong') {
+        dispatch(setSaveEnabled());
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const loadBoards = createAsyncThunk(
   'boards/loadBoards',
   async (_, { dispatch, rejectWithValue }) => {

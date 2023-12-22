@@ -11,6 +11,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("pong")
+}
+
 /**
  * SaveBoardHandler handles the saving of a game board
  * @param {sql.DB} db
