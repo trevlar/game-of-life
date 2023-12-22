@@ -2,6 +2,7 @@
   "name": "game-of-life",
   "version": "0.1.0",
   "private": true,
+  "author": "Trevor Carlston",
   "dependencies": {
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
@@ -18,9 +19,6 @@
     "react-redux": "^9.0.4",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
-  },
-  "resolutions": {
-    "immer": "10.0.3"
   },
   "scripts": {
     "preinstall": "npx npm-force-resolutions",

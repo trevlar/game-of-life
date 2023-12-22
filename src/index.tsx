@@ -1,9 +1,7 @@
 import { MantineProvider } from '@mantine/core';
-import { enableMapSet } from 'immer';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-enableMapSet();
 
 import './index.css';
 import App from './App';
