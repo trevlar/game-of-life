@@ -21,7 +21,7 @@ func main() {
 	defer db.Close()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/ping", api.PingHandler).Methods("GET")
+	r.HandleFunc("/api/ping", api.PingHandler).Methods("GET")
 	r.HandleFunc("/api/boards", api.GetBoardsListHandler(db)).Methods("GET")
 	r.HandleFunc("/api/board", api.SaveBoardHandler(db)).Methods("POST")
 
