@@ -53,10 +53,12 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-jest-dom": "^5.1.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "npm-force-resolutions": "^0.0.10"
+    "jest-matchmedia-mock": "^1.1.0",
+    "npm-force-resolutions": "^0.0.10",
+    "resize-observer-polyfill": "^1.5.1"
   },
   "resolutions": {
-    "nth-check": ">=2.0.1",
-    "postcss": ">=8.4.31"
+    "nth-check": "2.0.1",
+    "postcss": "8.4.32"
   }
 }

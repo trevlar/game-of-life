@@ -7,6 +7,7 @@ import {
   Switch,
   useMantineTheme,
   Button,
+  Text,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -62,7 +63,8 @@ const GameSettings = () => {
   };
 
   return (
-    <Stack p="sm">
+    <Stack p="sm" gap="lg">
+      <Text>Game Settings</Text>
       <NumberInput
         label="Board Size"
         value={boardSize}

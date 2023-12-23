@@ -45,8 +45,8 @@ function App() {
 
   const viewport = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (viewport?.current) {
-      viewport.current.scrollTo({ top: viewport.current.scrollHeight / 2, behavior: 'smooth' });
+    if (viewport?.current?.scrollTo) {
+      viewport?.current?.scrollTo({ top: viewport.current.scrollHeight / 2, behavior: 'smooth' });
     }
   }, [viewport]);
 
@@ -107,7 +107,7 @@ function App() {
                 }
               />
               <Menu offset={12}>
-                <Menu.Target>
+                <Menu.Target aria-label="settings" role="button">
                   <IconSettings style={{ width: rem(35), height: rem(35) }} />
                 </Menu.Target>
 

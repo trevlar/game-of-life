@@ -74,6 +74,8 @@ function GameBoard() {
                   radius="0"
                   withBorder
                   draggable={false}
+                  role="button"
+                  aria-label={`cell-${col},${rowIndex}`}
                 />
               ))}
             </Group>
