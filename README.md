@@ -21,8 +21,7 @@ This application allows me to demonstrate my ability to build a React applicatio
 Before starting ensure that you have the following:
 
 - You have installed the latest version of [Node.js and npm](https://nodejs.org/en/download/).
-- You have a Windows/Mac/Linux machine.
-- You have downloaded or cloned the [repository](https://github.com/your/repo).
+- You have downloaded or cloned the [repository](https://github.com/trevlar/game-of-life).
 - If you plan to run the backend API locally:
   - You have installed the latest version of [Golang](https://golang.org/dl/).
   - You have installed and properly configured [SQLite](https://www.sqlite.org/download.html).
