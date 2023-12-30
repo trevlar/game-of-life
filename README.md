@@ -6,7 +6,7 @@ This is a React-based front-end application that simulates [Conway's Game of Lif
 
 This application allows me to demonstrate my ability to build a React application from scratch. The application is built with the following technologies:
 
-- [React](https://reactjs.org/): A JavaScript library for building user interfaces.
+- [React](https://react.dev/): A JavaScript library for building user interfaces.
 - [Redux Toolkit](https://redux-toolkit.js.org/): The official library for Redux stores.
 - [React Redux](https://react-redux.js.org/): The official React bindings for Redux.
 - [Redux Thunk](https://redux.js.org/usage/writing-logic-thunks): A middleware for Redux that allows asynchronous logic to be dispatched.
@@ -24,7 +24,7 @@ Before starting ensure that you have the following:
 - You have downloaded or cloned the [repository](https://github.com/trevlar/game-of-life).
 - If you plan to run the backend API locally:
   - You have installed the latest version of [Golang](https://golang.org/dl/).
-  - You have installed and properly configured [SQLite](https://www.sqlite.org/download.html).
+  - You have installed and configured [SQLite](https://www.sqlite.org/download.html).
 
 ### Installing
 
