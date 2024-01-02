@@ -70,7 +70,6 @@ function GameBoard() {
             row.map((_, col) => (
               <Box
                 key={`board-cell-${col}-${rowIndex}`}
-                aria-label={`board-cell-${col}-${rowIndex}`}
                 position={[
                   (col - boardSize / 2) * 0.2 + col * 0.05,
                   (rowIndex - boardSize / 2) * 0.2 + rowIndex * 0.05,
