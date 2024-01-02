@@ -27,6 +27,7 @@ const initialState: GameState = {
   liveCellColor: defaultLiveCellColor,
   deadCellColor: defaultDeadCellColor,
   backgroundColor: defaultBackgroundColor,
+  zoomLevel: 5,
   continuousEdges: false,
   generationsPerAdvance: 1,
   livingCellCount: 0,
@@ -120,6 +121,9 @@ export const gameSlice = createSlice({
     setBackgroundColor: (state, action: PayloadAction<SettingsPayload>) => {
       state.backgroundColor = action.payload.backgroundColor || defaultBackgroundColor;
     },
+    setZoomLevel: (state, action: PayloadAction<SettingsPayload>) => {
+      state.zoomLevel = action.payload.zoomLevel || 1;
+    },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
       state.continuousEdges = action.payload.continuousEdges || false;
     },
@@ -156,6 +160,7 @@ export const {
   setLiveCellColor,
   setDeadCellColor,
   setBackgroundColor,
+  setZoomLevel,
   setDescription,
   setGameSpeed,
   setGenerationsPerAdvance,

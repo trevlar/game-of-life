@@ -1,4 +1,5 @@
-// eslint-disable react/no-unknown-property
+import { Camera } from '@react-three/fiber';
+
 interface LightProps {
   intensity: number;
   position?: [number, number, number];
@@ -14,4 +15,17 @@ interface MeshStandardMaterialProps {
 export const MeshStandardMaterial = ({ color, attach }: MeshStandardMaterialProps) => (
   <meshStandardMaterial color={color} attach={attach} />
 );
-// eslint-enable react/no-unknown-property
+
+interface GroupProps {
+  children: React.ReactNode;
+  position?: [number, number, number];
+}
+export const Group = ({ children, position }: GroupProps) => (
+  <group position={position}>{children}</group>
+);
+
+interface CameraHelperProps {
+  args: [camera: Camera];
+}
+
+export const CameraHelper3JS = ({ args }: CameraHelperProps) => <cameraHelper args={args} />;

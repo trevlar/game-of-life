@@ -7,29 +7,48 @@ import App from './App';
 import gameReducer from './game/gameSlice';
 
 jest.mock('axios', () => ({
-  get: jest.fn(() => Promise.resolve({ data: {} })),
+  default: jest.fn(),
 }));
 
 jest.mock('@react-three/drei', () => ({
-  Box: jest.fn(() => null),
-}));
-jest.mock('@react-three/fiber', () => ({
-  Canvas: jest.fn(() => null),
+  Box: ({ name, onPointerDown, onPointerEnter }) => (
+    <button
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onPointerDown();
+      }}
+      onMouseEnter={(e) => {
+        e.preventDefault();
+        onPointerEnter();
+      }}
+    >
+      {name}
+    </button>
+  ),
+  Preload: () => <div />,
+  ScrollControls: ({ children }) => <div>{children}</div>,
 }));
 
-// jest.mock('@mantine/hooks', () => ({
-//   useMediaQuery: jest.fn(() => false),
-//   useIsomorphicEffect: jest.fn(),
-//   useInterval: jest.fn(() => ({
-//     start: jest.fn(),
-//     stop: jest.fn(),
-//   })),
-//   useWindowEvent: jest.fn(),
-//   useFocusTrap: jest.fn(),
-//   clamp: jest.fn((value, min, max) => {
-//     return Math.min(Math.max(value, min), max);
-//   }),
-// }));
+jest.mock('@react-three/fiber', () => ({
+  Canvas: ({ children }) => <div>{children}</div>,
+  useThree: () => ({
+    camera: {
+      zoom: 1,
+      position: {
+        z: 1,
+      },
+    },
+    set: () => null,
+  }),
+}));
+
+jest.mock('./game/components/ThreeJSElements', () => ({
+  AmbientLight: () => null,
+  DirectionalLight: () => null,
+  MeshStandardMaterial: (props) => <div data-ambient-light={props.color} />,
+  Group: ({ children }) => <div>{children}</div>,
+  CameraHelper3JS: () => null,
+}));
 
 describe('App', () => {
   let store;

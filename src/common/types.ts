@@ -11,6 +11,7 @@ export interface GameState {
   liveCellColor: string;
   deadCellColor: string;
   backgroundColor: string;
+  zoomLevel: number;
   continuousEdges: boolean;
   generationsPerAdvance: number;
   livingCellCount: number;
@@ -50,6 +51,7 @@ export interface SettingsPayload {
   liveCellColor?: string;
   deadCellColor?: string;
   backgroundColor?: string;
+  zoomLevel?: number;
   continuousEdges?: boolean;
   generationsPerAdvance?: number;
 }

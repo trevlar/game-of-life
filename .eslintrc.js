@@ -39,7 +39,7 @@ module.exports = {
         'plugin:jest-dom/recommended',
       ],
       rules: {
-        "react/no-unknown-property": ["error", { "ignore": ["intensity", "position", "attach", "hardness"] }],
+        "react/no-unknown-property": ["error", { "ignore": ["intensity", "position", "attach", "hardness", "args"] }],
         'linebreak-style': ['error', 'unix'],
         'react/prop-types': 'off',
 

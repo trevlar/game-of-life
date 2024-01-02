@@ -1,4 +1,3 @@
-import { MantineProvider } from '@mantine/core';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -22,16 +21,29 @@ jest.mock('@react-three/drei', () => ({
       {name}
     </button>
   ),
+  Preload: () => <div />,
+  ScrollControls: ({ children }) => <div>{children}</div>,
 }));
 
 jest.mock('@react-three/fiber', () => ({
   Canvas: ({ children }) => <div>{children}</div>,
+  useThree: () => ({
+    camera: {
+      zoom: 1,
+      position: {
+        z: 1,
+      },
+    },
+    set: () => null,
+  }),
 }));
 
 jest.mock('./ThreeJSElements', () => ({
   AmbientLight: () => null,
   DirectionalLight: () => null,
   MeshStandardMaterial: (props) => <div data-ambient-light={props.color} />,
+  Group: ({ children }) => <div>{children}</div>,
+  CameraHelper3JS: () => null,
 }));
 
 describe('GameBoard', () => {
@@ -39,11 +51,9 @@ describe('GameBoard', () => {
 
   const renderGameboard = () => {
     return render(
-      <MantineProvider>
-        <Provider store={store}>
-          <GameBoard />
-        </Provider>
-      </MantineProvider>
+      <Provider store={store}>
+        <GameBoard />
+      </Provider>
     );
   };
 

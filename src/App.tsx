@@ -1,11 +1,11 @@
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import {
+  ActionIcon,
   AppShell,
   Center,
   Group,
   Menu,
-  ScrollArea,
   Stack,
   Switch,
   Text,
@@ -13,14 +13,20 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
-import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettings } from '@tabler/icons-react';
+import {
+  IconPlayerPlayFilled,
+  IconPlayerStopFilled,
+  IconSettings,
+  IconPlus,
+  IconMinus,
+} from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import GameBoard from './game/components/GameBoard';
 import GameControls from './game/components/GameControls';
 import GameSettings from './game/components/GameSettings';
-import { togglePlay, nextGeneration } from './game/gameSlice';
+import { togglePlay, nextGeneration, setZoomLevel } from './game/gameSlice';
 
 const gameSpeeds = {
   slow: 200,
@@ -30,7 +36,7 @@ const gameSpeeds = {
 
 function App() {
   const dispatch = useAppDispatch();
-  const { gameSpeed, generations, isPlaying, livingCellCount } = useAppSelector(
+  const { gameSpeed, generations, isPlaying, livingCellCount, zoomLevel } = useAppSelector(
     (state) => state.game
   );
 
@@ -64,11 +70,12 @@ function App() {
   return (
     <AppShell
       className="App"
-      header={{ height: 60 }}
-      padding="md"
+      style={{ overflow: 'hidden' }}
+      header={{ height: 60, collapsed: false, offset: true }}
+      pt="0"
       footer={{ height: 100, collapsed: false, offset: false }}
     >
-      <AppShell.Header w="100vw">
+      <AppShell.Header w="100vw" style={{ position: 'relative' }}>
         <Group w="100%" h="100%" px="md" style={{ flexWrap: 'nowrap' }}>
           <Group justify="space-between" style={{ flex: 1, flexWrap: 'nowrap' }}>
             <Text visibleFrom="xs">Conways Game of Life</Text>
@@ -120,31 +127,34 @@ function App() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Main>
-        <Stack>
-          <Center>
-            <Group>
-              <Text size="xl" weight={700} align="center">
-                {generations} Generations
-              </Text>
-              <Text size="xl" weight={700} align="center">
-                {livingCellCount} Living Cells
-              </Text>
-            </Group>
-          </Center>
-          <ScrollArea
-            type="always"
-            w="calc(100vw - 32px)"
-            h="auto"
-            scrollbarSize={20}
-            viewportRef={viewport}
-            pb="xl"
-            px={0}
-            mx={0}
-          >
-            <GameBoard />
-          </ScrollArea>
-        </Stack>
+      <AppShell.Main pt="md" m="0" style={{ minHeight: 'calc(100vh - 60px)' }}>
+        <Center>
+          <Group>
+            <Text size="xl" weight={700} align="center">
+              {generations} Generations
+            </Text>
+            <Text size="xl" weight={700} align="center">
+              {livingCellCount} Living Cells
+            </Text>
+            <ActionIcon
+              variant="outline"
+              color="blue"
+              radius="xl"
+              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel - 0.1 }))}
+            >
+              <IconPlus />
+            </ActionIcon>
+            <ActionIcon
+              variant="outline"
+              color="blue"
+              radius="xl"
+              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel + 0.1 }))}
+            >
+              <IconMinus />
+            </ActionIcon>
+          </Group>
+        </Center>
+        <GameBoard />
       </AppShell.Main>
 
       <AppShell.Footer hiddenFrom="sm" withBorder>
