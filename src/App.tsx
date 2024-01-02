@@ -140,7 +140,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel - 0.1 }))}
+              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel - 0.5 }))}
             >
               <IconPlus />
             </ActionIcon>
@@ -148,7 +148,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel + 0.1 }))}
+              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel + 0.5 }))}
             >
               <IconMinus />
             </ActionIcon>
