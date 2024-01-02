@@ -10,6 +10,13 @@ jest.mock('axios', () => ({
   get: jest.fn(() => Promise.resolve({ data: {} })),
 }));
 
+jest.mock('@react-three/drei', () => ({
+  Box: jest.fn(() => null),
+}));
+jest.mock('@react-three/fiber', () => ({
+  Canvas: jest.fn(() => null),
+}));
+
 // jest.mock('@mantine/hooks', () => ({
 //   useMediaQuery: jest.fn(() => false),
 //   useIsomorphicEffect: jest.fn(),
