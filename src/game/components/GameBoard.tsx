@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../app/hooks';
 import { setBoardAtLocation } from '../gameSlice';
 
+import { AmbientLight, DirectionalLight, MeshStandardMaterial } from './ThreeJSElements';
+
 function GameBoard() {
   const dispatch = useDispatch();
   const { boardSize, livingCells, liveCellColor, deadCellColor, backgroundColor } = useAppSelector(
@@ -39,7 +41,7 @@ function GameBoard() {
       setIsLiving(col, row);
     }
   };
-  // eslint-disable react/no-unknown-property
+
   return (
     <Center w="100%">
       <Paper
@@ -62,12 +64,13 @@ function GameBoard() {
             backgroundColor: backgroundColor,
           }}
         >
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[0, 0, 5]} intensity={1} />
+          <AmbientLight intensity={0.5} />
+          <DirectionalLight position={[0, 0, 5]} intensity={1} />
           {board.map((row, rowIndex) =>
             row.map((_, col) => (
               <Box
                 key={`board-cell-${col}-${rowIndex}`}
+                aria-label={`board-cell-${col}-${rowIndex}`}
                 position={[
                   (col - boardSize / 2) * 0.2 + col * 0.05,
                   (rowIndex - boardSize / 2) * 0.2 + rowIndex * 0.05,
@@ -76,8 +79,13 @@ function GameBoard() {
                 args={[0.15, 0.15, 0.15]}
                 onPointerDown={() => handleMouseDown(col, rowIndex)}
                 onPointerEnter={() => shouldToggleLiving(col, rowIndex)}
+                name={
+                  livingCells.length && livingCells.includes(`${col},${rowIndex}`)
+                    ? `cell-${col}-${rowIndex}-live`
+                    : `cell-${col}-${rowIndex}-dead`
+                }
               >
-                <meshStandardMaterial
+                <MeshStandardMaterial
                   color={
                     livingCells.length && livingCells.includes(`${col},${rowIndex}`)
                       ? liveCellColor
@@ -92,7 +100,6 @@ function GameBoard() {
       </Paper>
     </Center>
   );
-  // eslint-enable react/no-unknown-property
 }
 
 export default GameBoard;
