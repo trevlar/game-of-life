@@ -10,6 +10,8 @@ This application allows me to demonstrate my ability to build a React applicatio
 - [Redux Toolkit](https://redux-toolkit.js.org/): The official library for Redux stores.
 - [React Redux](https://react-redux.js.org/): The official React bindings for Redux.
 - [Redux Thunk](https://redux.js.org/usage/writing-logic-thunks): A middleware for Redux that allows asynchronous logic to be dispatched.
+- [Three.js](https://github.com/mrdoob/three.js/) Light-weight, cross-browser, general purpose 3D library that uses a WebGL renderer.  
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) Self contained, reusable React components for three.js.
 - [Mantine UI](https://mantine.dev/): A React UI component library.
 - [Golang](https://golang.org/): A statically typed, compiled programming language.
 - [SQLite](https://www.sqlite.org/index.html): A relational database management system.
@@ -54,10 +56,12 @@ Additional features include:
 - The option to toggle a toroidal board structure, where the edges of the board wrap around to the other side.
 - Adjustable speed for automatic playthroughs.
 - Adjustable board size.
+- The ability to set the color of live cells, dead cells and the boards background.
 - The ability to reset or clear the board.
 - A counter tracking the number of generations since the board was created.
 - The ability to save and load the board state from an API.
 - Best performing algorithm that processes live cells and their neighbors for mutations.
+- Using Canvas element with three.js to render the board.
 
 ## Backend API
 

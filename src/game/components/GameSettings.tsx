@@ -8,6 +8,9 @@ import {
   useMantineTheme,
   Button,
   Text,
+  ColorPicker,
+  ColorSwatch,
+  Group,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -18,7 +21,15 @@ import {
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../app/hooks';
-import { setGameSpeed, setBoardSize, setContinuousEdges, clearBoard } from '../gameSlice';
+import {
+  setGameSpeed,
+  setBoardSize,
+  setLiveCellColor,
+  setDeadCellColor,
+  setBackgroundColor,
+  setContinuousEdges,
+  clearBoard,
+} from '../gameSlice';
 
 const SPEEDS = [
   {
@@ -53,13 +64,26 @@ const SPEEDS = [
 const GameSettings = () => {
   const dispatch = useDispatch();
   const theme = useMantineTheme();
-  const { gameSpeed, boardSize, continuousEdges } = useAppSelector((state) => state.game);
+  const { gameSpeed, boardSize, continuousEdges, liveCellColor, deadCellColor, backgroundColor } =
+    useAppSelector((state) => state.game);
   const handleSpeedChange = (value: string) => {
     dispatch(setGameSpeed({ gameSpeed: value }));
   };
 
   const handleSizeChange = (val: number) => {
     dispatch(setBoardSize({ boardSize: val }));
+  };
+
+  const handleLiveCellChange = (color: string) => {
+    dispatch(setLiveCellColor({ liveCellColor: color }));
+  };
+
+  const handleBackgroundColorChange = (color: string) => {
+    dispatch(setBackgroundColor({ backgroundColor: color }));
+  };
+
+  const handleDeadCellChange = (color: string) => {
+    dispatch(setDeadCellColor({ deadCellColor: color }));
   };
 
   return (
@@ -74,6 +98,35 @@ const GameSettings = () => {
         step={1}
       />
       <SegmentedControl value={gameSpeed} onChange={handleSpeedChange} data={SPEEDS} />
+      <Stack gap="xs">
+        <Group>
+          <Text>Live Cell Color</Text>
+          <ColorSwatch color={liveCellColor} />
+        </Group>
+        <ColorPicker value={liveCellColor} fullWidth size="xs" onChange={handleLiveCellChange} />
+      </Stack>
+
+      <Stack gap="xs">
+        <Group>
+          <Text>Dead Cell Color</Text>
+          <ColorSwatch color={deadCellColor} />
+        </Group>
+        <ColorPicker value={deadCellColor} fullWidth size="xs" onChange={handleDeadCellChange} />
+      </Stack>
+
+      <Stack gap="xs">
+        <Group>
+          <Text>Background Color</Text>
+          <ColorSwatch color={backgroundColor} />
+        </Group>
+        <ColorPicker
+          value={backgroundColor}
+          fullWidth
+          size="xs"
+          onChange={handleBackgroundColorChange}
+        />
+      </Stack>
+
       <Switch
         label="Continuous Edges"
         checked={continuousEdges}

@@ -11,6 +11,9 @@ import {
 
 const defaultBoardSize = 38;
 const virtualBoardSizeOffset = 40;
+const defaultLiveCellColor = '#82c91e';
+const defaultBackgroundColor = '#000000';
+const defaultDeadCellColor = '#FFFFFF';
 
 const initialState: GameState = {
   title: '',
@@ -21,6 +24,9 @@ const initialState: GameState = {
   boardSize: defaultBoardSize,
   virtualBoardSize: defaultBoardSize + virtualBoardSizeOffset,
   gameSpeed: 'normal',
+  liveCellColor: defaultLiveCellColor,
+  deadCellColor: defaultDeadCellColor,
+  backgroundColor: defaultBackgroundColor,
   continuousEdges: false,
   generationsPerAdvance: 1,
   livingCellCount: 0,
@@ -105,6 +111,15 @@ export const gameSlice = createSlice({
       state.livingCells = trimLiveCellsToSize(state.livingCells, state.boardSize);
       state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
+    setLiveCellColor: (state, action: PayloadAction<SettingsPayload>) => {
+      state.liveCellColor = action.payload.liveCellColor || defaultLiveCellColor;
+    },
+    setDeadCellColor: (state, action: PayloadAction<SettingsPayload>) => {
+      state.deadCellColor = action.payload.deadCellColor || defaultDeadCellColor;
+    },
+    setBackgroundColor: (state, action: PayloadAction<SettingsPayload>) => {
+      state.backgroundColor = action.payload.backgroundColor || defaultBackgroundColor;
+    },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
       state.continuousEdges = action.payload.continuousEdges || false;
     },
@@ -138,6 +153,9 @@ export const {
   setBoards,
   setBoardSize,
   setContinuousEdges,
+  setLiveCellColor,
+  setDeadCellColor,
+  setBackgroundColor,
   setDescription,
   setGameSpeed,
   setGenerationsPerAdvance,

@@ -8,6 +8,9 @@ export interface GameState {
   boardSize: number;
   virtualBoardSize: number;
   gameSpeed: string;
+  liveCellColor: string;
+  deadCellColor: string;
+  backgroundColor: string;
   continuousEdges: boolean;
   generationsPerAdvance: number;
   livingCellCount: number;
@@ -44,6 +47,9 @@ export interface GamePayload {
 export interface SettingsPayload {
   boardSize?: number;
   gameSpeed?: string;
+  liveCellColor?: string;
+  deadCellColor?: string;
+  backgroundColor?: string;
   continuousEdges?: boolean;
   generationsPerAdvance?: number;
 }

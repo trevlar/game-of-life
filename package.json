@@ -3,27 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "author": "Trevor Carlston",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx --no-cache"
+  },
   "dependencies": {
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
+    "@react-three/drei": "^9.92.7",
+    "@react-three/fiber": "^8.15.12",
     "@reduxjs/toolkit": "^2.0.1",
     "@tabler/icons-react": "^2.44.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/three": "^0.160.0",
     "axios": "^1.6.2",
     "install": "^0.13.0",
     "npm": "^10.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.0.4",
+    "three": "^0.160.0",
     "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

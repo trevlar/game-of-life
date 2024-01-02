@@ -6,10 +6,11 @@ module.exports = {
   },
   plugins: [
     'prettier',
+    '@react-three',
   ],
   parserOptions: { ecmaVersion: 8, sourceType: 'module' },
   ignorePatterns: ['node_modules/*'],
-  extends: ['eslint:recommended'],
+  extends: ['plugin:@react-three/recommended', 'eslint:recommended'],
   overrides: [
     {
       files: ['**/*.ts', '**/*.tsx'],
@@ -24,6 +25,7 @@ module.exports = {
       },
       extends: [
         "prettier",
+        'plugin:@react-three/recommended',
         'eslint:recommended',
         'plugin:import/errors',
         'plugin:import/warnings',
@@ -37,6 +39,7 @@ module.exports = {
         'plugin:jest-dom/recommended',
       ],
       rules: {
+        "react/no-unknown-property": ["error", { "ignore": ["intensity", "position", "attach", "hardness"] }],
         'linebreak-style': ['error', 'unix'],
         'react/prop-types': 'off',
 
