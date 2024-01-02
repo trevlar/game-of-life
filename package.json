@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@react-three/eslint-plugin": "^0.1.1",
     "@react-three/test-renderer": "^8.2.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.56.0",
