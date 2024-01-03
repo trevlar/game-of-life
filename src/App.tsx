@@ -20,9 +20,10 @@ import {
   IconPlus,
   IconMinus,
 } from '@tabler/icons-react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from './app/hooks';
+import { getZoomLevel } from './game/components/Camera';
 import GameBoard from './game/components/GameBoard';
 import GameControls from './game/components/GameControls';
 import GameSettings from './game/components/GameSettings';
@@ -66,6 +67,15 @@ function App() {
     }
     return interval.stop;
   }, [isPlaying, interval]);
+
+  const handleZoomButtonClick = useCallback(
+    (zoomBy: number) => {
+      const newZoomLevel = getZoomLevel(zoomLevel, zoomBy);
+
+      dispatch(setZoomLevel({ zoomLevel: newZoomLevel }));
+    },
+    [dispatch, zoomLevel]
+  );
 
   return (
     <AppShell
@@ -140,7 +150,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel - 0.5 }))}
+              onClick={() => handleZoomButtonClick(0.5)}
             >
               <IconPlus />
             </ActionIcon>
@@ -148,7 +158,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => dispatch(setZoomLevel({ zoomLevel: zoomLevel + 0.5 }))}
+              onClick={() => handleZoomButtonClick(-0.5)}
             >
               <IconMinus />
             </ActionIcon>
