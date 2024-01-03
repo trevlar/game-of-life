@@ -122,7 +122,7 @@ export const gameSlice = createSlice({
       state.backgroundColor = action.payload.backgroundColor || defaultBackgroundColor;
     },
     setZoomLevel: (state, action: PayloadAction<SettingsPayload>) => {
-      state.zoomLevel = action.payload.zoomLevel || 1;
+      state.zoomLevel = action.payload.zoomLevel;
     },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
       state.continuousEdges = action.payload.continuousEdges || false;
