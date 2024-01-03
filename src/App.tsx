@@ -150,7 +150,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => handleZoomButtonClick(0.5)}
+              onClick={() => handleZoomButtonClick(-0.5)}
             >
               <IconPlus />
             </ActionIcon>
@@ -158,7 +158,7 @@ function App() {
               variant="outline"
               color="blue"
               radius="xl"
-              onClick={() => handleZoomButtonClick(-0.5)}
+              onClick={() => handleZoomButtonClick(0.5)}
             >
               <IconMinus />
             </ActionIcon>
