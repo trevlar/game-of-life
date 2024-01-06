@@ -3,10 +3,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GameState, GamePayload, SettingsPayload } from '../common/types';
 
 import {
-  convertBoardToLiveCells,
   processNextGenByLiveCellsAndNeighbors,
   trimLiveCellsToSize,
   countLivingCellsInBoard,
+  deepCopyLivingCells,
 } from './gameLogic';
 
 const defaultBoardSize = 38;
@@ -18,7 +18,7 @@ const defaultDeadCellColor = '#FFFFFF';
 const initialState: GameState = {
   title: '',
   description: '',
-  livingCells: [],
+  livingCells: [[]],
   generations: 0,
   isPlaying: false,
   boardSize: defaultBoardSize,
@@ -52,16 +52,16 @@ export const gameSlice = createSlice({
       }
 
       const { livingCells, boardSize, continuousEdges } = state;
-      let newLiveCells = new Set(livingCells);
+      let newLivingCells = deepCopyLivingCells(livingCells);
       for (let i = 0; i < steps; i++) {
-        newLiveCells = processNextGenByLiveCellsAndNeighbors(
-          newLiveCells,
+        newLivingCells = processNextGenByLiveCellsAndNeighbors(
+          newLivingCells,
           boardSize,
           continuousEdges
         );
       }
-      state.livingCells = Array.from(newLiveCells);
-      state.livingCellCount = countLivingCellsInBoard(state.livingCells, boardSize);
+      state.livingCells = newLivingCells;
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells);
 
       state.generations += steps;
     },
@@ -70,7 +70,7 @@ export const gameSlice = createSlice({
       state.id = game.id;
       state.title = game.title;
       state.description = game.description;
-      state.livingCells = game.livingCells || convertBoardToLiveCells(game.board);
+      state.livingCells = game.livingCells || deepCopyLivingCells(game.board);
       state.generations = game.generations;
       state.isPlaying = game.isPlaying;
       state.boardSize = game.settings.boardSize;
@@ -94,12 +94,15 @@ export const gameSlice = createSlice({
     setBoardAtLocation: (state, action: PayloadAction<GamePayload>) => {
       const { row, col } = action.payload.cell || { row: 0, col: 0 };
 
-      if (state.livingCells.includes(`${col},${row}`)) {
-        const newCells = state.livingCells.filter((cell) => cell !== `${col},${row}`);
-        state.livingCells = [...newCells];
+      const newCells = state.livingCells.map((row) => [...row]);
+      if (state.livingCells[col]?.[row]) {
+        delete newCells[col][row];
+        state.livingCells = newCells;
         state.livingCellCount = state.livingCellCount - 1;
       } else {
-        state.livingCells = [...state.livingCells, `${col},${row}`];
+        newCells[col] = newCells[col] || [];
+        newCells[col][row] = true;
+        state.livingCells = newCells;
         state.livingCellCount = state.livingCellCount + 1;
       }
     },
@@ -110,7 +113,7 @@ export const gameSlice = createSlice({
       state.boardSize = action.payload.boardSize || defaultBoardSize;
       state.generations = 0;
       state.livingCells = trimLiveCellsToSize(state.livingCells, state.boardSize);
-      state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells);
     },
     setLiveCellColor: (state, action: PayloadAction<SettingsPayload>) => {
       state.liveCellColor = action.payload.liveCellColor || defaultLiveCellColor;

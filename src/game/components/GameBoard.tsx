@@ -99,16 +99,14 @@ function GameBoard() {
               onPointerDown={() => handleMouseDown(col, rowIndex)}
               onPointerEnter={() => shouldToggleLiving(col, rowIndex)}
               name={
-                livingCells.length && livingCells.includes(`${col},${rowIndex}`)
+                livingCells.length && livingCells[col]?.[rowIndex]
                   ? `cell-${col}-${rowIndex}-live`
                   : `cell-${col}-${rowIndex}-dead`
               }
             >
               <MeshStandardMaterial
                 color={
-                  livingCells.length && livingCells.includes(`${col},${rowIndex}`)
-                    ? liveCellColor
-                    : deadCellColor
+                  livingCells.length && livingCells[col]?.[rowIndex] ? liveCellColor : deadCellColor
                 }
                 attach="material"
               />

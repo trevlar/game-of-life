@@ -2,7 +2,7 @@ export interface GameState {
   id?: string;
   title: string;
   description: string;
-  livingCells: string[];
+  livingCells: boolean[][];
   generations: number;
   isPlaying: boolean;
   boardSize: number;

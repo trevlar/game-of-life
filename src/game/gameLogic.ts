@@ -33,43 +33,36 @@ const getNeighborIndexes = (
   rowOffset: number,
   cellOffset: number,
   wrapAround: boolean
-) => {
-  let neighborCell = cell.x + cellOffset;
-  let neighborRow = cell.y + rowOffset;
+): Cell => {
+  let nX = cell.x + cellOffset;
+  let nY = cell.y + rowOffset;
 
   if (wrapAround) {
-    if (neighborRow < 0) {
-      neighborRow = boardSize - 1;
-    } else if (neighborRow >= boardSize) {
-      neighborRow = 0;
+    if (nY < 0) {
+      nY = boardSize - 1;
+    } else if (nY >= boardSize) {
+      nY = 0;
     }
-    if (neighborCell < 0) {
-      neighborCell = boardSize - 1;
-    } else if (neighborCell >= boardSize) {
-      neighborCell = 0;
+    if (nX < 0) {
+      nX = boardSize - 1;
+    } else if (nX >= boardSize) {
+      nX = 0;
     }
   }
 
-  return [neighborRow, neighborCell];
+  return { x: nX, y: nY };
 };
 
 function getLivingNeighborCount(
   cell: Cell,
-  liveCells: Set<string>,
+  liveCells: boolean[][],
   boardSize: number,
   wrapAround: boolean
 ): number {
   return directions.reduce((neighborCount, [rowOffset, cellOffset]) => {
-    const [neighborRow, neighborCell] = getNeighborIndexes(
-      cell,
-      boardSize,
-      rowOffset,
-      cellOffset,
-      wrapAround
-    );
+    const { x: nX, y: nY } = getNeighborIndexes(cell, boardSize, rowOffset, cellOffset, wrapAround);
 
-    const neighborCellKey = `${neighborCell},${neighborRow}`;
-    if (liveCells.has(neighborCellKey)) {
+    if (liveCells[nY]?.[nX]) {
       return neighborCount + 1;
     }
     return neighborCount;
@@ -79,116 +72,121 @@ function getLivingNeighborCount(
 /**
  * This function processes the next generation of the board based on the current state of the board.
  * We are only storing the live cells in the board, so we need to process those cells and their neighbors.
- * @param board This is the board that is being processed
+ * @param liveCells The living cells on the board represented by a sparsely populated muldimensional array.
  * @param boardSize This is the size of the board.  It is assumed that the board is square.
  * @param wrapAround This is a boolean that indicates whether the board wraps around the edges.
  */
 export const processNextGenByLiveCellsAndNeighbors = (
-  liveCells: Set<string>,
+  liveCells: boolean[][],
   boardSize: number,
   wrapAround: boolean
 ) => {
-  const newLiveCells = new Set<string>();
-  const consideredCells = new Set<string>();
+  const newLiveCells: boolean[][] = [];
+  const consideredCells = [];
 
-  liveCells.forEach((liveCell) => {
-    const [x, y] = liveCell.split(',').map(Number);
-    const cell = { x, y };
+  liveCells.forEach((row, rowIndex) => {
+    row?.forEach((_, cellIndex) => {
+      const cell = { x: cellIndex, y: rowIndex };
 
-    directions.forEach(([rowOffset, cellOffset]) => {
-      const [neighborRow, neighborCell] = getNeighborIndexes(
-        cell,
-        boardSize,
-        rowOffset,
-        cellOffset,
-        wrapAround
-      );
+      directions.forEach(([rowOffset, cellOffset]) => {
+        const { x: nX, y: nY } = getNeighborIndexes(
+          cell,
+          boardSize,
+          rowOffset,
+          cellOffset,
+          wrapAround
+        );
 
-      if (
-        neighborRow < 0 - 20 ||
-        neighborRow > boardSize + 20 ||
-        neighborCell < 0 - 20 ||
-        neighborCell > boardSize + 20
-      ) {
-        return;
-      }
-
-      const neighborCellKey = `${neighborCell},${neighborRow}`;
-      if (consideredCells.has(neighborCellKey)) {
-        return;
-      }
-      consideredCells.add(neighborCellKey);
-
-      const livingNeighborCount = getLivingNeighborCount(
-        { x: neighborCell, y: neighborRow },
-        liveCells,
-        boardSize,
-        wrapAround
-      );
-
-      if (liveCells.has(neighborCellKey)) {
-        if (isUnderpopulated(livingNeighborCount)) {
+        if (nY < 0 - 20 || nY > boardSize + 20 || nX < 0 - 20 || nX > boardSize + 20) {
           return;
         }
 
-        if (isLivingOn(livingNeighborCount)) {
-          newLiveCells.add(neighborCellKey);
+        if (consideredCells[nY]?.[nX]) {
           return;
+        } else {
+          consideredCells[nY] = consideredCells[nY] || [];
+          consideredCells[nY][nX] = true;
         }
 
-        if (isOverpopulated(livingNeighborCount)) {
-          return;
+        const livingNeighborCount = getLivingNeighborCount(
+          { x: nX, y: nY },
+          liveCells,
+          boardSize,
+          wrapAround
+        );
+
+        if (liveCells[nY]?.[nX]) {
+          if (isUnderpopulated(livingNeighborCount)) {
+            return;
+          }
+
+          if (isLivingOn(livingNeighborCount)) {
+            newLiveCells[nY] = newLiveCells[nY] || [];
+            newLiveCells[nY][nX] = true;
+            return;
+          }
+
+          if (isOverpopulated(livingNeighborCount)) {
+            return;
+          }
+        } else if (canReproduce(livingNeighborCount)) {
+          newLiveCells[nY] = newLiveCells[nY] || [];
+          newLiveCells[nY][nX] = true;
         }
-      } else if (canReproduce(livingNeighborCount)) {
-        newLiveCells.add(neighborCellKey);
-      }
+      });
     });
   });
 
   return newLiveCells;
 };
 
-export const convertBoardToLiveCells = (board: boolean[][]) => {
-  const liveCells = new Set<string>();
-  board.forEach((row, rowIndex) => {
-    row.forEach((cell, cellIndex) => {
-      if (cell) {
-        liveCells.add(`${cellIndex},${rowIndex}`);
-      }
-    });
-  });
-  return Array.from(liveCells);
-};
-
 /**
- * This function will trim the board to the visible board. It will remove equal rows and columns from the live cells that are beyond the bounds of the newly sized board.
- * @param liveCells The set of live cells that are being trimmed
+ * This function will trim the live cells to the size of the visible board.
+ * It removes equal rows and columns from live cells beyond the bounds of the newly sized board.
+ * @param liveCells A sparsley populated array of the live cells being trimmed
  * @param boardSize The size of the board
  * @returns A new set of live cells that are within the bounds of the board
  */
-export const trimLiveCellsToSize = (liveCells: string[], boardSize: number) => {
+export const trimLiveCellsToSize = (liveCells: boolean[][], boardSize: number) => {
   const trimmedLiveCells = [];
 
-  liveCells.forEach((liveCell) => {
-    const [x, y] = liveCell.split(',').map(Number);
-
-    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
-      trimmedLiveCells.push(liveCell);
+  liveCells.forEach((row, rowIndex) => {
+    if (rowIndex < boardSize) {
+      trimmedLiveCells[rowIndex] = [];
+      row.forEach((cell, cellIndex) => {
+        if (cellIndex < boardSize) {
+          trimmedLiveCells[rowIndex][cellIndex] = true;
+        }
+      });
     }
   });
 
   return trimmedLiveCells;
 };
 
-export const countLivingCellsInBoard = (liveCells: string[], boardSize: number) => {
-  let livingCellCount = 0;
-  liveCells.forEach((liveCell) => {
-    const [x, y] = liveCell.split(',').map(Number);
+export const countLivingCellsInBoard = (liveCells: boolean[][]) => {
+  return liveCells.reduce((totalLivingCount, row) => {
+    return row.reduce((cellCount, cell) => {
+      if (cell) {
+        cellCount++;
+      }
 
-    if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
-      livingCellCount++;
-    }
+      return cellCount;
+    }, totalLivingCount);
+  }, 0);
+};
+
+export function deepCopyLivingCells(liveCells: boolean[][]): boolean[][] {
+  const newLiveCells = [];
+
+  liveCells.forEach((row, rowIndex) => {
+    newLiveCells[rowIndex] = [];
+    row.forEach((cell, cellIndex) => {
+      if (cell) {
+        newLiveCells[rowIndex][cellIndex] = true;
+      }
+    });
   });
 
-  return livingCellCount;
-};
+  return newLiveCells;
+}
