@@ -19,7 +19,6 @@ const gameBoardMouseCursor = {
 
 const getCursor = (boardMouseAction, isDragging) => {
   if (boardMouseAction === 'move') {
-    console.log(boardMouseAction, gameBoardMouseCursor[boardMouseAction], isDragging);
     return gameBoardMouseCursor[boardMouseAction][isDragging ? 1 : 0];
   }
 
@@ -42,7 +41,7 @@ function GameBoard() {
   const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseOverCanvas, setIsMouseOverCanvas] = useState(false);
-  const [cameraPosition, setCameraPosition] = useState<number[]>([0, 0, 5]);
+  const [cameraPosition, setCameraPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const lastMousePosition = useRef({ x: 0, y: 0 });
 
   const board = useMemo(() => {
@@ -97,15 +96,19 @@ function GameBoard() {
         lastMousePosition.current = { x: e.clientX, y: e.clientY };
 
         setCameraPosition((prev) => {
-          console.log('setting');
-          prev[0] -= dx * 0.01;
-          prev[1] += dy * 0.01;
+          const updated = { ...prev };
 
-          return prev;
+          const newX = dx * (0.01 * zoomLevel);
+          const newY = dy * (0.01 * zoomLevel);
+
+          updated.x -= Math.max(-6, Math.min(newX, 6));
+          updated.y += Math.max(-6, Math.min(newY, 6));
+
+          return updated;
         });
       }
     },
-    [isDragging]
+    [isDragging, boardMouseAction]
   );
 
   return (
