@@ -42,6 +42,7 @@ import {
   setBoardMouseAction,
 } from '../components/game/gameSlice';
 import { checkApiConnection } from '../components/game/gameApiActions';
+import GameEditor from '../components/game/components/GameEditor';
 
 const gameSpeeds = {
   slow: 200,
@@ -93,30 +94,6 @@ function Home() {
     }
     return interval.stop;
   }, [isPlaying, interval]);
-
-  const handleZoomButtonClick = useCallback(
-    (zoomBy: number) => {
-      const newZoomLevel = getZoomLevel(zoomLevel, zoomBy);
-
-      dispatch(setZoomLevel({ zoomLevel: newZoomLevel }));
-    },
-    [dispatch, zoomLevel]
-  );
-
-  const handleEditGrid = useCallback(
-    () => dispatch(setBoardMouseAction({ action: 'draw' })),
-    [dispatch]
-  );
-
-  const handleEraseGrid = useCallback(
-    () => dispatch(setBoardMouseAction({ action: 'erase' })),
-    [dispatch]
-  );
-
-  const handleMoveGrid = useCallback(
-    () => dispatch(setBoardMouseAction({ action: 'move' })),
-    [dispatch]
-  );
 
   return (
     <AppShell
@@ -182,12 +159,10 @@ function Home() {
             style={{ flexWrap: 'nowrap' }}
           >
             <GameControls />
-            <Text size="xl" weight={700} align="center">
-              {generations} Generations
-            </Text>
-            <Text size="xl" weight={700} align="center">
-              {livingCellCount} Living Cells
-            </Text>
+            <Group style={{ flexWrap: 'nowrap' }}>
+              <Text size="xl">{generations} Generations</Text>
+              <Text size="xl">{livingCellCount} Living Cells</Text>
+            </Group>
           </Group>
         </Container>
         <GameBoard />
@@ -195,84 +170,7 @@ function Home() {
 
       <AppShell.Footer withBorder>
         <Container p="md">
-          <Group justify="space-between">
-            <ButtonGroup>
-              <Button
-                variant="outline"
-                leftSection={<IconDeviceFloppy />}
-                onClick={() => handleShowSaveModal()}
-                disabled={!isSaveEnabled}
-              >
-                Save
-              </Button>
-              <Menu disabled={!isSaveEnabled}>
-                <Menu.Target>
-                  <Button variant="outline" disabled={!isSaveEnabled}>
-                    <IconCaretDown />
-                  </Button>
-                </Menu.Target>
-
-                <Menu.Dropdown>
-                  <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-              <Button
-                variant="outline"
-                leftSection={<IconDownload />}
-                onClick={() => setShowLoadModal(true)}
-                disabled={!isSaveEnabled}
-              >
-                Load
-              </Button>
-            </ButtonGroup>
-            <Group justify="flex-end">
-              <Group>
-                <ActionIcon
-                  variant={boardMouseAction === 'move' ? 'filled' : 'light'}
-                  color="blue"
-                  radius="xl"
-                  onClick={() => handleMoveGrid()}
-                >
-                  <IconHandMove />
-                </ActionIcon>
-                <ActionIcon
-                  variant={boardMouseAction === 'draw' ? 'filled' : 'light'}
-                  color="blue"
-                  radius="xl"
-                  onClick={() => handleEditGrid()}
-                >
-                  <IconPencil />
-                </ActionIcon>
-                <ActionIcon
-                  variant={boardMouseAction === 'erase' ? 'filled' : 'light'}
-                  color="blue"
-                  radius="xl"
-                  onClick={() => handleEraseGrid()}
-                >
-                  <IconEraser />
-                </ActionIcon>
-              </Group>
-
-              <Group justify="flex-end">
-                <ActionIcon
-                  variant="outline"
-                  color="blue"
-                  radius="xl"
-                  onClick={() => handleZoomButtonClick(0.5)}
-                >
-                  <IconMinus />
-                </ActionIcon>
-                <ActionIcon
-                  variant="outline"
-                  color="blue"
-                  radius="xl"
-                  onClick={() => handleZoomButtonClick(-0.5)}
-                >
-                  <IconPlus />
-                </ActionIcon>
-              </Group>
-            </Group>
-          </Group>
+          <GameEditor />
         </Container>
       </AppShell.Footer>
     </AppShell>

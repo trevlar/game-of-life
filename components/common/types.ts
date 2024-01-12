@@ -55,4 +55,5 @@ export interface SettingsPayload {
   zoomLevel?: number;
   continuousEdges?: boolean;
   generationsPerAdvance?: number;
+  action?: 'draw' | 'erase' | 'move';
 }

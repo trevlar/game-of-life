@@ -1,43 +1,22 @@
-import { Button, ButtonGroup, Menu, Slider, Text, em } from '@mantine/core';
+import { Button, ButtonGroup, Slider, Text, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-  IconCaretDown,
-  IconDeviceFloppy,
-  IconDownload,
   IconPlayerPlayFilled,
   IconPlayerSkipForward,
   IconPlayerSkipForwardFilled,
 } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../../components/app/hooks';
 import { AppDispatch } from '../../../components/app/store';
-import { checkApiConnection } from '../gameApiActions';
-import { nextGeneration, setGenerationsPerAdvance, resetSaveData } from '../gameSlice';
-
-import LoadBoardModal from './LoadBoardModal';
-import SaveBoardModal from './SaveBoardModal';
+import { nextGeneration, setGenerationsPerAdvance } from '../gameSlice';
 
 const GameControls = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { isPlaying, generationsPerAdvance, isSaveEnabled } = useAppSelector((state) => state.game);
+  const { isPlaying, generationsPerAdvance } = useAppSelector((state) => state.game);
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const handleMoveForward = () => {
     dispatch(nextGeneration());
-  };
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
-
-  useEffect(() => {
-    dispatch(checkApiConnection());
-  }, [dispatch]);
-
-  const handleShowSaveModal = (isNew = false) => {
-    setShowSaveModal(true);
-    if (isNew) {
-      dispatch(resetSaveData());
-    }
   };
 
   const handleSetGenerationsPerAdvance = (value: number) => {
@@ -71,8 +50,6 @@ const GameControls = () => {
           <Text>Generation</Text>
         </Button>
       </ButtonGroup>
-      <SaveBoardModal showModal={showSaveModal} onClose={() => setShowSaveModal(false)} />
-      <LoadBoardModal showModal={showLoadModal} onClose={() => setShowLoadModal(false)} />
     </>
   );
 };

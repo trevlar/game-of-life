@@ -11,13 +11,8 @@ import {
   ColorPicker,
   ColorSwatch,
   Group,
-  Menu,
-  ButtonGroup,
 } from '@mantine/core';
 import {
-  IconCaretDown,
-  IconDeviceFloppy,
-  IconDownload,
   IconPlayerPlay,
   IconPlayerPlayFilled,
   IconPlayerTrackNextFilled,
@@ -36,9 +31,6 @@ import {
   clearBoard,
   resetSaveData,
 } from '../gameSlice';
-import { useMediaQuery } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
-import { checkApiConnection } from '../gameApiActions';
 
 const SPEEDS = [
   {
@@ -94,13 +86,6 @@ const GameSettings = () => {
 
   const handleDeadCellChange = (color: string) => {
     dispatch(setDeadCellColor({ deadCellColor: color }));
-  };
-
-  const handleShowSaveModal = (isNew = false) => {
-    setShowSaveModal(true);
-    if (isNew) {
-      dispatch(resetSaveData());
-    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import { Box, Preload } from '@react-three/drei';
+import { Preload } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -6,10 +6,9 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../components/app/hooks';
 import { setBoardAtLocation, setZoomLevel } from '../gameSlice';
 
-import { Camera, getMaxZoomLevel, getZoomLevel } from './Camera';
-import { AmbientLight, DirectionalLight, MeshStandardMaterial } from './ThreeJSElements';
-import { ActionIcon, Center, Group, Text } from '@mantine/core';
-import { IconMinus, IconPlus } from '@tabler/icons-react';
+import { Camera, getMaxZoomLevel } from './Camera';
+import { AmbientLight, DirectionalLight } from './ThreeJSElements';
+import GameCell from './GameCell';
 
 const gameBoardMouseCursor = {
   move: ['grab', 'grabbing'],
@@ -29,8 +28,6 @@ function GameBoard() {
   const dispatch = useDispatch();
   const {
     boardMouseAction,
-    generations,
-    livingCellCount,
     boardSize,
     livingCells,
     liveCellColor,
@@ -78,7 +75,8 @@ function GameBoard() {
     setIsLiving(col, row);
   };
 
-  const handleMouseUpOrLeave = () => {
+  const handleMouseUpOrLeave = (e) => {
+    lastMousePosition.current = { x: e.clientX, y: e.clientY };
     setIsDragging(false);
   };
 
@@ -111,6 +109,8 @@ function GameBoard() {
     [isDragging, boardMouseAction]
   );
 
+  const isEditMode = boardMouseAction === 'draw' || boardMouseAction === 'erase';
+
   return (
     <Canvas
       camera={{ position: [0, 0, 5], fov: 100 }}
@@ -124,17 +124,17 @@ function GameBoard() {
       ref={canvasRef}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUpOrLeave}
       onMouseMove={handleMouseMove}
       onMouseLeave={(e) => {
         e.preventDefault();
-        handleMouseUpOrLeave();
+        handleMouseUpOrLeave(e);
         setIsMouseOverCanvas(false);
       }}
       onMouseEnter={(e) => {
         e.preventDefault();
         setIsMouseOverCanvas(true);
       }}
-      onMouseUp={handleMouseUpOrLeave}
       aria-label="game board"
     >
       <Suspense fallback={null}>
@@ -144,43 +144,22 @@ function GameBoard() {
         <DirectionalLight position={[0, 0, 5]} intensity={1} />
         {board.map((row, rowIndex) =>
           row.map((_, col) => (
-            <Box
+            <GameCell
               key={`bc${col}${rowIndex}`}
-              position={[
-                (col - boardSize / 2) * 0.2 + col * 0.05,
-                (rowIndex - boardSize / 2) * 0.2 + rowIndex * 0.05,
-                0,
-              ]}
-              args={[0.18, 0.18, 0.02]}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMouseClick(col, rowIndex);
+              {...{
+                shouldToggleLiving,
+                col,
+                rowIndex,
+                boardSize,
+                livingCells,
+                liveCellColor,
+                deadCellColor,
+                handleMouseClick,
+                handleMouseDown,
+                handleMouseUpOrLeave,
+                isEditMode,
               }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                handleMouseDown(e);
-              }}
-              onPointerOver={(e) => {
-                e.stopPropagation();
-                shouldToggleLiving(col, rowIndex);
-              }}
-              onPointerUp={(e) => {
-                e.stopPropagation();
-                handleMouseUpOrLeave();
-              }}
-              name={
-                livingCells.length && livingCells[col]?.[rowIndex]
-                  ? `cell-${col}-${rowIndex}-live`
-                  : `cell-${col}-${rowIndex}-dead`
-              }
-            >
-              <MeshStandardMaterial
-                color={
-                  livingCells.length && livingCells[col]?.[rowIndex] ? liveCellColor : deadCellColor
-                }
-                attach="material"
-              />
-            </Box>
+            />
           ))
         )}
       </Suspense>

@@ -11,9 +11,11 @@ export const DirectionalLight = ({ intensity, position }: LightProps) => (
 interface MeshStandardMaterialProps {
   color: string;
   attach: string;
+  opacity?: number;
+  transparent?: boolean;
 }
-export const MeshStandardMaterial = ({ color, attach }: MeshStandardMaterialProps) => (
-  <meshStandardMaterial color={color} attach={attach} />
+export const MeshStandardMaterial = ({ color, attach, ...rest }: MeshStandardMaterialProps) => (
+  <meshStandardMaterial color={color} attach={attach} {...rest} />
 );
 
 interface GroupProps {
