@@ -13,11 +13,11 @@ export const checkApiConnection = createAsyncThunk(
     try {
       const response = await axios.get(`${BASE_URL}/api/ping`);
 
-      if (response.data === 'pong') {
+      if (response.data.message === 'pong') {
         dispatch(setSaveEnabled({ isSaveEnabled: true }));
       }
 
-      return response.data;
+      return response.data.message;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
