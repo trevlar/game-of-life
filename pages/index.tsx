@@ -1,6 +1,8 @@
 import {
   ActionIcon,
   AppShell,
+  Button,
+  ButtonGroup,
   Center,
   Container,
   Group,
@@ -22,8 +24,11 @@ import {
   IconPencil,
   IconEraser,
   IconHandMove,
+  IconDeviceFloppy,
+  IconCaretDown,
+  IconDownload,
 } from '@tabler/icons-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../components/app/hooks';
 import { getZoomLevel } from '../components/game/components/Camera';
@@ -36,6 +41,7 @@ import {
   setZoomLevel,
   setBoardMouseAction,
 } from '../components/game/gameSlice';
+import { checkApiConnection } from '../components/game/gameApiActions';
 
 const gameSpeeds = {
   slow: 200,
@@ -45,8 +51,21 @@ const gameSpeeds = {
 
 function Home() {
   const dispatch = useAppDispatch();
-  const { boardMouseAction, gameSpeed, generations, isPlaying, livingCellCount, zoomLevel } =
-    useAppSelector((state) => state.game);
+  const {
+    isSaveEnabled,
+    boardMouseAction,
+    gameSpeed,
+    generations,
+    isPlaying,
+    livingCellCount,
+    zoomLevel,
+  } = useAppSelector((state) => state.game);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showLoadModal, setShowLoadModal] = useState(false);
+
+  useEffect(() => {
+    dispatch(checkApiConnection());
+  }, [dispatch]);
 
   const interval = useInterval(() => {
     try {
@@ -176,51 +195,82 @@ function Home() {
 
       <AppShell.Footer withBorder>
         <Container p="md">
-          <Group justify="flex-end">
-            <Group>
-              <ActionIcon
-                variant={boardMouseAction === 'move' ? 'filled' : 'light'}
-                color="blue"
-                radius="xl"
-                onClick={() => handleMoveGrid()}
+          <Group justify="space-between">
+            <ButtonGroup>
+              <Button
+                variant="outline"
+                leftSection={<IconDeviceFloppy />}
+                onClick={() => handleShowSaveModal()}
+                disabled={!isSaveEnabled}
               >
-                <IconHandMove />
-              </ActionIcon>
-              <ActionIcon
-                variant={boardMouseAction === 'draw' ? 'filled' : 'light'}
-                color="blue"
-                radius="xl"
-                onClick={() => handleEditGrid()}
-              >
-                <IconPencil />
-              </ActionIcon>
-              <ActionIcon
-                variant={boardMouseAction === 'erase' ? 'filled' : 'light'}
-                color="blue"
-                radius="xl"
-                onClick={() => handleEraseGrid()}
-              >
-                <IconEraser />
-              </ActionIcon>
-            </Group>
+                Save
+              </Button>
+              <Menu disabled={!isSaveEnabled}>
+                <Menu.Target>
+                  <Button variant="outline" disabled={!isSaveEnabled}>
+                    <IconCaretDown />
+                  </Button>
+                </Menu.Target>
 
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+              <Button
+                variant="outline"
+                leftSection={<IconDownload />}
+                onClick={() => setShowLoadModal(true)}
+                disabled={!isSaveEnabled}
+              >
+                Load
+              </Button>
+            </ButtonGroup>
             <Group justify="flex-end">
-              <ActionIcon
-                variant="outline"
-                color="blue"
-                radius="xl"
-                onClick={() => handleZoomButtonClick(0.5)}
-              >
-                <IconMinus />
-              </ActionIcon>
-              <ActionIcon
-                variant="outline"
-                color="blue"
-                radius="xl"
-                onClick={() => handleZoomButtonClick(-0.5)}
-              >
-                <IconPlus />
-              </ActionIcon>
+              <Group>
+                <ActionIcon
+                  variant={boardMouseAction === 'move' ? 'filled' : 'light'}
+                  color="blue"
+                  radius="xl"
+                  onClick={() => handleMoveGrid()}
+                >
+                  <IconHandMove />
+                </ActionIcon>
+                <ActionIcon
+                  variant={boardMouseAction === 'draw' ? 'filled' : 'light'}
+                  color="blue"
+                  radius="xl"
+                  onClick={() => handleEditGrid()}
+                >
+                  <IconPencil />
+                </ActionIcon>
+                <ActionIcon
+                  variant={boardMouseAction === 'erase' ? 'filled' : 'light'}
+                  color="blue"
+                  radius="xl"
+                  onClick={() => handleEraseGrid()}
+                >
+                  <IconEraser />
+                </ActionIcon>
+              </Group>
+
+              <Group justify="flex-end">
+                <ActionIcon
+                  variant="outline"
+                  color="blue"
+                  radius="xl"
+                  onClick={() => handleZoomButtonClick(0.5)}
+                >
+                  <IconMinus />
+                </ActionIcon>
+                <ActionIcon
+                  variant="outline"
+                  color="blue"
+                  radius="xl"
+                  onClick={() => handleZoomButtonClick(-0.5)}
+                >
+                  <IconPlus />
+                </ActionIcon>
+              </Group>
             </Group>
           </Group>
         </Container>

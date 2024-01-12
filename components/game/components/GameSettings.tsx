@@ -73,21 +73,8 @@ const SPEEDS = [
 const GameSettings = () => {
   const dispatch = useDispatch();
   const theme = useMantineTheme();
-  const {
-    isSaveEnabled,
-    gameSpeed,
-    boardSize,
-    continuousEdges,
-    liveCellColor,
-    deadCellColor,
-    backgroundColor,
-  } = useAppSelector((state) => state.game);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
-
-  useEffect(() => {
-    dispatch(checkApiConnection());
-  }, [dispatch]);
+  const { gameSpeed, boardSize, continuousEdges, liveCellColor, deadCellColor, backgroundColor } =
+    useAppSelector((state) => state.game);
 
   const handleSpeedChange = (value: string) => {
     dispatch(setGameSpeed({ gameSpeed: value }));
@@ -170,36 +157,6 @@ const GameSettings = () => {
       >
         Reset Board
       </Button>
-
-      <ButtonGroup>
-        <Button
-          variant="outline"
-          leftSection={<IconDeviceFloppy />}
-          onClick={() => handleShowSaveModal()}
-          disabled={!isSaveEnabled}
-        >
-          Save
-        </Button>
-        <Menu disabled={!isSaveEnabled}>
-          <Menu.Target>
-            <Button variant="outline" disabled={!isSaveEnabled}>
-              <IconCaretDown />
-            </Button>
-          </Menu.Target>
-
-          <Menu.Dropdown>
-            <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-        <Button
-          variant="outline"
-          leftSection={<IconDownload />}
-          onClick={() => setShowLoadModal(true)}
-          disabled={!isSaveEnabled}
-        >
-          Load
-        </Button>
-      </ButtonGroup>
     </Stack>
   );
 };
