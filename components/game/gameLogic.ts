@@ -1,4 +1,4 @@
-import { Cell } from '../common/types';
+import { Cell } from '../../components/common/types';
 
 const directions = [
   [-1, -1], // top left

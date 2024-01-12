@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { GameState, GamePayload, SettingsPayload } from '../common/types';
+import { GameState, GamePayload, SettingsPayload } from '../../components/common/types';
 
 import {
   processNextGenByLiveCellsAndNeighbors,
@@ -28,6 +28,7 @@ const initialState: GameState = {
   deadCellColor: defaultDeadCellColor,
   backgroundColor: defaultBackgroundColor,
   zoomLevel: 5,
+  boardMouseAction: 'move', 
   continuousEdges: false,
   generationsPerAdvance: 1,
   livingCellCount: 0,
@@ -95,11 +96,11 @@ export const gameSlice = createSlice({
       const { row, col } = action.payload.cell || { row: 0, col: 0 };
 
       const newCells = state.livingCells.map((row) => [...row]);
-      if (state.livingCells[col]?.[row]) {
+      if (state.boardMouseAction === 'erase' && newCells[col]?.[row]) {
         delete newCells[col][row];
         state.livingCells = newCells;
-        state.livingCellCount = state.livingCellCount - 1;
-      } else {
+        state.livingCellCount = state.livingCellCount > 0 ? state.livingCellCount - 1 : 0;
+      } else if (state.boardMouseAction === 'draw') {
         newCells[col] = newCells[col] || [];
         newCells[col][row] = true;
         state.livingCells = newCells;
@@ -126,6 +127,9 @@ export const gameSlice = createSlice({
     },
     setZoomLevel: (state, action: PayloadAction<SettingsPayload>) => {
       state.zoomLevel = action.payload.zoomLevel;
+    },
+    setBoardMouseAction: (state, action: PayloadAction<SettingsPayload>) => {
+      state.boardMouseAction = action.payload.action;
     },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
       state.continuousEdges = action.payload.continuousEdges || false;
@@ -163,6 +167,7 @@ export const {
   setLiveCellColor,
   setDeadCellColor,
   setBackgroundColor,
+  setBoardMouseAction,
   setZoomLevel,
   setDescription,
   setGameSpeed,

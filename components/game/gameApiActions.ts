@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-import { RootState } from '../app/store';
+import { RootState } from '../../components/app/store';
 
 import { setBoardId, setBoards, setSaveEnabled, setSelectedBoard } from './gameSlice';
 

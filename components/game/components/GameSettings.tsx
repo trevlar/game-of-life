@@ -11,8 +11,13 @@ import {
   ColorPicker,
   ColorSwatch,
   Group,
+  Menu,
+  ButtonGroup,
 } from '@mantine/core';
 import {
+  IconCaretDown,
+  IconDeviceFloppy,
+  IconDownload,
   IconPlayerPlay,
   IconPlayerPlayFilled,
   IconPlayerTrackNextFilled,
@@ -20,7 +25,7 @@ import {
 } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../../components/app/hooks';
 import {
   setGameSpeed,
   setBoardSize,
@@ -29,7 +34,11 @@ import {
   setBackgroundColor,
   setContinuousEdges,
   clearBoard,
+  resetSaveData,
 } from '../gameSlice';
+import { useMediaQuery } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
+import { checkApiConnection } from '../gameApiActions';
 
 const SPEEDS = [
   {
@@ -64,8 +73,22 @@ const SPEEDS = [
 const GameSettings = () => {
   const dispatch = useDispatch();
   const theme = useMantineTheme();
-  const { gameSpeed, boardSize, continuousEdges, liveCellColor, deadCellColor, backgroundColor } =
-    useAppSelector((state) => state.game);
+  const {
+    isSaveEnabled,
+    gameSpeed,
+    boardSize,
+    continuousEdges,
+    liveCellColor,
+    deadCellColor,
+    backgroundColor,
+  } = useAppSelector((state) => state.game);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showLoadModal, setShowLoadModal] = useState(false);
+
+  useEffect(() => {
+    dispatch(checkApiConnection());
+  }, [dispatch]);
+
   const handleSpeedChange = (value: string) => {
     dispatch(setGameSpeed({ gameSpeed: value }));
   };
@@ -84,6 +107,13 @@ const GameSettings = () => {
 
   const handleDeadCellChange = (color: string) => {
     dispatch(setDeadCellColor({ deadCellColor: color }));
+  };
+
+  const handleShowSaveModal = (isNew = false) => {
+    setShowSaveModal(true);
+    if (isNew) {
+      dispatch(resetSaveData());
+    }
   };
 
   return (
@@ -140,6 +170,36 @@ const GameSettings = () => {
       >
         Reset Board
       </Button>
+
+      <ButtonGroup>
+        <Button
+          variant="outline"
+          leftSection={<IconDeviceFloppy />}
+          onClick={() => handleShowSaveModal()}
+          disabled={!isSaveEnabled}
+        >
+          Save
+        </Button>
+        <Menu disabled={!isSaveEnabled}>
+          <Menu.Target>
+            <Button variant="outline" disabled={!isSaveEnabled}>
+              <IconCaretDown />
+            </Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+        <Button
+          variant="outline"
+          leftSection={<IconDownload />}
+          onClick={() => setShowLoadModal(true)}
+          disabled={!isSaveEnabled}
+        >
+          Load
+        </Button>
+      </ButtonGroup>
     </Stack>
   );
 };

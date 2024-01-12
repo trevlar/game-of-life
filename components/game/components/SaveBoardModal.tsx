@@ -4,7 +4,7 @@ import { IconDeviceFloppy } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { AppDispatch, RootState } from '../../app/store';
+import { AppDispatch, RootState } from '../../../components/app/store';
 import { saveBoard } from '../gameApiActions';
 import { setTitle, setDescription } from '../gameSlice';
 

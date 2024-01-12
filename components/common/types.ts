@@ -7,6 +7,7 @@ export interface GameState {
   isPlaying: boolean;
   boardSize: number;
   virtualBoardSize: number;
+  boardMouseAction: 'draw' | 'erase' | 'move';
   gameSpeed: string;
   liveCellColor: string;
   deadCellColor: string;

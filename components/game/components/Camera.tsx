@@ -18,29 +18,46 @@ export function getZoomLevel(zoomLevel: number, zoomBy: number): number {
   return clampedZoomLevel;
 }
 
-export function Camera({ targetZoom }) {
+interface Position {
+  x: number;
+  y: number;
+}
+
+export function Camera({ targetPosition, targetZoom }) {
   const { camera } = useThree();
   const currentZoomRef = useRef(camera.position.z);
+  const currentPositionRef = useRef({ x: camera.position.x, y: camera.position.y });
 
   const setCameraPosition = useCallback(
-    (zoomLevel: number) => {
+    (zoomLevel: number, targetPosition) => {
       if (camera.position.z !== zoomLevel) {
         camera.position.z = zoomLevel;
         currentZoomRef.current = zoomLevel;
       }
+      const { x, y } = targetPosition;
+      if (camera.position.x !== x) {
+        camera.position.x = x;
+      }
+      if (camera.position.y !== y) {
+        camera.position.y = y;
+      }
+      currentPositionRef.current = { x, y };
     },
     [camera]
   );
 
   useEffect(() => {
     const handleZoom = () => {
-      setCameraPosition(targetZoom);
+      setCameraPosition(targetZoom, targetPosition);
     };
 
-    if (Math.abs(targetZoom - currentZoomRef.current) > 0.01) {
+    if (
+      Math.abs(targetZoom - currentZoomRef.current) > 0.01 ||
+      targetPosition !== currentPositionRef.current
+    ) {
       handleZoom();
     }
-  }, [setCameraPosition, targetZoom]);
+  }, [setCameraPosition, targetZoom, targetPosition]);
 
   return null;
 }
