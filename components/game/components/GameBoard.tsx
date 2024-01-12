@@ -155,7 +155,7 @@ function GameBoard() {
               }}
               onPointerDown={(e) => {
                 e.stopPropagation();
-                handleMouseDown(col, rowIndex);
+                handleMouseDown(e);
               }}
               onPointerOver={(e) => {
                 e.stopPropagation();
