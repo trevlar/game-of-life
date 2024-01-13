@@ -1,11 +1,22 @@
 import Head from 'next/head';
 import { Provider } from 'react-redux';
 import { MantineProvider } from '@mantine/core';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
-import '../components/index.css';
+import '../styles/index.css';
 
-import { store } from '../components/app/store';
+import { store } from '../store/store';
+
+export const reportWebVitals = (onPerfEntry) => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    getCLS(onPerfEntry);
+    getFID(onPerfEntry);
+    getFCP(onPerfEntry);
+    getLCP(onPerfEntry);
+    getTTFB(onPerfEntry);
+  }
+};
 
 export default function MyApp({ Component, pageProps }) {
   return (

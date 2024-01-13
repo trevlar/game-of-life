@@ -1,48 +1,24 @@
 import {
-  ActionIcon,
   AppShell,
-  Button,
-  ButtonGroup,
-  Center,
   Container,
   Group,
   Menu,
-  Stack,
   Switch,
   Text,
   rem,
   useMantineTheme,
 } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
-import {
-  IconPlayerPlayFilled,
-  IconPlayerStopFilled,
-  IconSettings,
-  IconPlus,
-  IconMinus,
-  IconEdit,
-  IconPencil,
-  IconEraser,
-  IconHandMove,
-  IconDeviceFloppy,
-  IconCaretDown,
-  IconDownload,
-} from '@tabler/icons-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettings } from '@tabler/icons-react';
+import { useEffect, useRef } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../components/app/hooks';
-import { getZoomLevel } from '../components/game/components/Camera';
-import GameBoard from '../components/game/components/GameBoard';
-import GameControls from '../components/game/components/GameControls';
-import GameSettings from '../components/game/components/GameSettings';
-import {
-  togglePlay,
-  nextGeneration,
-  setZoomLevel,
-  setBoardMouseAction,
-} from '../components/game/gameSlice';
-import { checkApiConnection } from '../components/game/gameApiActions';
-import GameEditor from '../components/game/components/GameEditor';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import GameBoard from '../components/GameBoard';
+import GameControls from '../components/GameControls';
+import GameSettings from '../components/GameSettings';
+import { togglePlay, nextGeneration } from '../store/game/gameSlice';
+import { checkApiConnection } from '../store/game/gameApiActions';
+import GameEditor from '../components/GameEditor';
 
 const gameSpeeds = {
   slow: 200,
@@ -52,17 +28,9 @@ const gameSpeeds = {
 
 function Home() {
   const dispatch = useAppDispatch();
-  const {
-    isSaveEnabled,
-    boardMouseAction,
-    gameSpeed,
-    generations,
-    isPlaying,
-    livingCellCount,
-    zoomLevel,
-  } = useAppSelector((state) => state.game);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
+  const { gameSpeed, generations, isPlaying, livingCellCount } = useAppSelector(
+    (state) => state.game
+  );
 
   useEffect(() => {
     dispatch(checkApiConnection());

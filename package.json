@@ -13,6 +13,7 @@
   "dependencies": {
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
+    "@prisma/client": "^5.8.0",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
     "@reduxjs/toolkit": "^2.0.1",
@@ -62,6 +63,7 @@
     "eslint-plugin-jest-dom": "^5.1.0",
     "eslint-plugin-prettier": "^5.0.1",
     "jest-matchmedia-mock": "^1.1.0",
+    "prisma": "^5.8.0",
     "resize-observer-polyfill": "^1.5.1"
   }
 }
