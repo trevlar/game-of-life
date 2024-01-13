@@ -1,0 +1,49 @@
+datasource db {
+  provider = "sqlite" // or "postgresql", "mysql", etc.
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GameStates {
+  id              Int          @id @default(autoincrement())
+  title           String
+  boardDesc       String?      @map(name: "board_desc")
+  livingCells     String       @map(name: "living_cells")
+  generations     Int
+  isPlaying       Boolean      @map(name: "is_playing")
+  livingCellCount Int          @map(name: "living_cell_count")
+  settingsId      Int          @map(name: "settings_id")
+  board           String       @map(name: "board")
+  virtualBoard    String       @map(name: "virtual_board")
+  settings        GameSettings @relation(fields: [settingsId], references: [id])
+
+  @@map(name: "game_states")
+}
+
+model GameSettings {
+  id             Int            @id @default(autoincrement())
+  boardSize      Int?           @map(name: "board_size")
+  gameSpeed      String?        @map(name: "game_speed")
+  gensPerAdvance Int?           @map(name: "gens_per_advance")
+  wrapAround     Boolean?       @map(name: "wrap_around")
+  gameStates     GameStates[]
+  gameProgress   GameProgress[]
+
+  @@map(name: "game_settings")
+}
+
+model GameProgress {
+  id          Int           @id @default(autoincrement())
+  generations Int
+  liveCells   String        @map(name: "live_cells")
+  settingsId  Int?          @map(name: "settings_id")
+  steps       Int?
+  cellRow     Int?          @map(name: "cell_row")
+  cellCol     Int?          @map(name: "cell_col")
+  settings    GameSettings? @relation(fields: [settingsId], references: [id])
+
+  @@map(name: "game_progress")
+}

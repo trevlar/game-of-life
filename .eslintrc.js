@@ -5,12 +5,20 @@ module.exports = {
     es6: true,
   },
   plugins: [
+    '@next/next',
     'prettier',
     '@react-three',
+    '@typescript-eslint',
   ],
   parserOptions: { ecmaVersion: 8, sourceType: 'module' },
+  parser: '@typescript-eslint/parser',
   ignorePatterns: ['node_modules/*'],
-  extends: ['plugin:@react-three/recommended', 'eslint:recommended'],
+  extends: [
+    'plugin:@react-three/recommended',
+    'eslint:recommended',
+    'next',
+    'next/core-web-vitals',
+  ],
   overrides: [
     {
       files: ['**/*.ts', '**/*.tsx'],
