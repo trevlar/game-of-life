@@ -35,7 +35,7 @@ function GameCell({
       key={`bc${col}${rowIndex}`}
       position={[
         (col - boardSize / 2) * 0.2 + col * 0.05,
-        (rowIndex - boardSize / 2) * 0.2 + rowIndex * 0.05,
+        -1.5 * (rowIndex - boardSize / 2) * 0.2 + rowIndex * 0.05,
         0,
       ]}
       args={[0.18, 0.18, 0.02]}
