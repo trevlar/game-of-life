@@ -60,7 +60,7 @@ const LoadBoardModal: FC<LoadBoardModalProps> = ({ showModal, onClose }) => {
           </Accordion.Item>
         ))}
       </Accordion>
-      <Group position="right" justify="flex-end" mt="lg">
+      <Group justify="flex-end" mt="lg">
         <Button onClick={onClose} variant="transparent">
           Cancel
         </Button>
