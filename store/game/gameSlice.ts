@@ -77,9 +77,8 @@ export const gameSlice = createSlice({
       state.gameSpeed = game?.settings?.gameSpeed || 'normal';
       state.continuousEdges = game?.settings?.wrapAround || false;
       state.generationsPerAdvance = game?.settings?.generationsPerAdvance || 1;
-      console.log('game', typeof JSON.parse(game.livingCells))
       state.livingCells = game.livingCells ? JSON.parse(game.livingCells) : deepCopyLivingCells(game?.board || []);
-      state.livingCellCount = game?.livingCellCount || countLivingCellsInBoard(state.livingCells);
+      state.livingCellCount = game?.livingCellCount || countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
     resetSaveData: (state) => {
       state.id = null;
@@ -94,14 +93,19 @@ export const gameSlice = createSlice({
       state.livingCellCount = 0;
     },
     setBoardAtLocation: (state, action: PayloadAction<GamePayload>) => {
+      const { boardMouseAction } = state;
+      if (boardMouseAction === 'move') {
+        return;
+      }
+
       const { row, col } = action.payload.cell || { row: 0, col: 0 };
 
       const newCells = state.livingCells.map((row) => [...row]);
-      if (state.boardMouseAction === 'erase' && newCells[col]?.[row]) {
+      if (boardMouseAction === 'erase' && newCells[col]?.[row]) {
         delete newCells[col][row];
         state.livingCells = newCells;
         state.livingCellCount = state.livingCellCount > 0 ? state.livingCellCount - 1 : 0;
-      } else if (state.boardMouseAction === 'draw') {
+      } else if (boardMouseAction === 'draw') {
         newCells[col] = newCells[col] || [];
         newCells[col][row] = true;
         state.livingCells = newCells;
@@ -115,7 +119,7 @@ export const gameSlice = createSlice({
       state.boardSize = action.payload.boardSize || defaultBoardSize;
       state.generations = 0;
       state.livingCells = trimLiveCellsToSize(state.livingCells, state.boardSize);
-      state.livingCellCount = countLivingCellsInBoard(state.livingCells);
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
     setLiveCellColor: (state, action: PayloadAction<SettingsPayload>) => {
       state.liveCellColor = action.payload.liveCellColor || defaultLiveCellColor;
