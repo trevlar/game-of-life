@@ -33,8 +33,8 @@ function GameEditor() {
   const [showLoadModal, setShowLoadModal] = useState(false);
 
   useEffect(() => {
-    dispatch(checkApiConnection());
-  }, [dispatch]);
+    checkApiConnection();
+  }, []);
 
   const handleShowSaveModal = (isNew = false) => {
     setShowSaveModal(true);
