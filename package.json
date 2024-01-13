@@ -58,7 +58,7 @@
     "@react-three/eslint-plugin": "^0.1.1",
     "@react-three/test-renderer": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
-    "@typescript-eslint/parser": "^5.62.0",
+    "@typescript-eslint/parser": "^6.18.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
