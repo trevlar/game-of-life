@@ -24,7 +24,7 @@ export default async function handler(
       console.error('Error loading board:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  } else if (req.method === 'PUT') {
+  } else if (req.method === 'PUT' && process.env.NODE_ENV === 'development') {
     try {
       const { id } = req.query; // Get the board ID from the URL
 

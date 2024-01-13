@@ -71,25 +71,30 @@ function GameEditor() {
     <div>
       <Group justify="space-between">
         <ButtonGroup>
-          <Button
-            variant="outline"
-            leftSection={<IconDeviceFloppy />}
-            onClick={() => handleShowSaveModal()}
-            disabled={!isSaveEnabled}
-          >
-            Save
-          </Button>
-          <Menu disabled={!isSaveEnabled}>
-            <Menu.Target>
-              <Button variant="outline" disabled={!isSaveEnabled}>
-                <IconCaretDown />
+          {process.env.NODE_ENV === 'development' && (
+            <>
+              <Button
+                variant="outline"
+                leftSection={<IconDeviceFloppy />}
+                onClick={() => handleShowSaveModal()}
+                disabled={!isSaveEnabled}
+              >
+                Save
               </Button>
-            </Menu.Target>
+              <Menu disabled={!isSaveEnabled}>
+                <Menu.Target>
+                  <Button variant="outline" disabled={!isSaveEnabled}>
+                    <IconCaretDown />
+                  </Button>
+                </Menu.Target>
 
-            <Menu.Dropdown>
-              <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => handleShowSaveModal(true)}>Save As</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </>
+          )}
+
           <Button
             variant="outline"
             leftSection={<IconDownload />}
