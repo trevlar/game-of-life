@@ -20,7 +20,6 @@ import {
 } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '../store/hooks';
 import {
   setGameSpeed,
   setBoardSize,
@@ -30,6 +29,7 @@ import {
   setContinuousEdges,
   clearBoard,
 } from '../store/game/gameSlice';
+import { useAppSelector } from '../store/hooks';
 
 const SPEEDS = [
   {

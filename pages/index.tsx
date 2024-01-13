@@ -12,13 +12,13 @@ import { useInterval } from '@mantine/hooks';
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettings } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../store/hooks';
 import GameBoard from '../components/GameBoard';
 import GameControls from '../components/GameControls';
-import GameSettings from '../components/GameSettings';
-import { togglePlay, nextGeneration } from '../store/game/gameSlice';
-import { checkApiConnection } from '../store/game/gameApiActions';
 import GameEditor from '../components/GameEditor';
+import GameSettings from '../components/GameSettings';
+import { checkApiConnection } from '../store/game/gameApiActions';
+import { togglePlay, nextGeneration } from '../store/game/gameSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 const gameSpeeds = {
   slow: 200,

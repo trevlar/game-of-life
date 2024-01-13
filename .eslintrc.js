@@ -7,8 +7,10 @@ module.exports = {
   plugins: [
     'prettier',
     '@react-three',
+    '@typescript-eslint',
   ],
   parserOptions: { ecmaVersion: 8, sourceType: 'module' },
+  parser: '@typescript-eslint/parser',
   ignorePatterns: ['node_modules/*'],
   extends: ['plugin:@react-three/recommended', 'eslint:recommended'],
   overrides: [

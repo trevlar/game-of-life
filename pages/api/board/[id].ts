@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+
 import prisma from '../../../lib/prisma';
 import { SavedGame } from '../../../types/types';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     const { id } = req.query;
 
@@ -52,9 +50,8 @@ export default async function handler(
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-    
-    } else {
-      res.setHeader('Allow', ['GET', 'PUT']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
+  } else {
+    res.setHeader('Allow', ['GET', 'PUT']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }

@@ -4,9 +4,9 @@ import { IconDeviceFloppy } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { AppDispatch, RootState } from '../store/store';
 import { saveBoard } from '../store/game/gameApiActions';
 import { setTitle, setDescription } from '../store/game/gameSlice';
+import { AppDispatch, RootState } from '../store/store';
 
 interface SaveBoardModalProps {
   showModal: boolean;

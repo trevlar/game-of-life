@@ -4,8 +4,8 @@ import { IconCircleCheckFilled, IconDeviceFloppy } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { AppDispatch, RootState } from '../store/store';
 import { loadBoards, selectBoard } from '../store/game/gameApiActions';
+import { AppDispatch, RootState } from '../store/store';
 
 interface LoadBoardModalProps {
   showModal: boolean;

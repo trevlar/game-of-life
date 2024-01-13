@@ -1,6 +1,7 @@
 import { Box } from '@react-three/drei';
-import { MeshStandardMaterial } from './ThreeJSElements';
 import { useState } from 'react';
+
+import { MeshStandardMaterial } from './ThreeJSElements';
 
 interface GameCell {
   col: number;

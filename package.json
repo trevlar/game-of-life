@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "test": "react-scripts test",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx --no-cache"
+    "lint": "eslint components lib pages store tests types --ext .js,.jsx,.ts,.tsx --no-cache"
   },
   "dependencies": {
     "@mantine/core": "^7.3.2",
@@ -24,6 +24,7 @@
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@types/three": "^0.160.0",
+    "@typescript-eslint/typescript-estree": "^6.18.1",
     "axios": "^1.6.5",
     "install": "^0.13.0",
     "next": "^14.0.4",
@@ -56,14 +57,22 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@react-three/eslint-plugin": "^0.1.1",
     "@react-three/test-renderer": "^8.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jest-dom": "^5.1.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-testing-library": "^6.2.0",
     "jest-matchmedia-mock": "^1.1.0",
+    "prettier": "^3.2.1",
     "prisma": "^5.8.0",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "typescript": "^5.3.3"
   }
 }

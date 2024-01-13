@@ -1,6 +1,6 @@
+import { MantineProvider } from '@mantine/core';
 import Head from 'next/head';
 import { Provider } from 'react-redux';
-import { MantineProvider } from '@mantine/core';
 import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <div>
       <Head>
-        <title>Conway's Game of Life</title>
+        <title>Conway&apos;s Game of Life</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>

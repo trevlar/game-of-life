@@ -1,13 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { GameState, GamePayload, SettingsPayload, SavedGame } from '../../types/types';
-
 import {
   processNextGenByLiveCellsAndNeighbors,
   trimLiveCellsToSize,
   countLivingCellsInBoard,
   deepCopyLivingCells,
 } from '../../lib/gameLogic';
+import { GameState, GamePayload, SettingsPayload, SavedGame } from '../../types/types';
 
 const defaultBoardSize = 38;
 const virtualBoardSizeOffset = 40;
@@ -28,7 +27,7 @@ const initialState: GameState = {
   deadCellColor: defaultDeadCellColor,
   backgroundColor: defaultBackgroundColor,
   zoomLevel: 5,
-  boardMouseAction: 'move', 
+  boardMouseAction: 'move',
   continuousEdges: false,
   generationsPerAdvance: 1,
   livingCellCount: 0,
@@ -77,8 +76,11 @@ export const gameSlice = createSlice({
       state.gameSpeed = game?.settings?.gameSpeed || 'normal';
       state.continuousEdges = game?.settings?.wrapAround || false;
       state.generationsPerAdvance = game?.settings?.generationsPerAdvance || 1;
-      state.livingCells = game.livingCells ? JSON.parse(game.livingCells) : deepCopyLivingCells(game?.board || []);
-      state.livingCellCount = game?.livingCellCount || countLivingCellsInBoard(state.livingCells, state.boardSize);
+      state.livingCells = game.livingCells
+        ? JSON.parse(game.livingCells)
+        : deepCopyLivingCells(game?.board || []);
+      state.livingCellCount =
+        game?.livingCellCount || countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
     resetSaveData: (state) => {
       state.id = null;

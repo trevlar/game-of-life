@@ -3,12 +3,12 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '../store/hooks';
 import { setBoardAtLocation, setZoomLevel } from '../store/game/gameSlice';
+import { useAppSelector } from '../store/hooks';
 
 import { Camera, getMaxZoomLevel } from './Camera';
-import { AmbientLight, DirectionalLight } from './ThreeJSElements';
 import GameCell from './GameCell';
+import { AmbientLight, DirectionalLight } from './ThreeJSElements';
 
 const gameBoardMouseCursor = {
   move: ['grab', 'grabbing'],
@@ -63,12 +63,15 @@ function GameBoard() {
     }
   };
 
-  const handleMouseDown = useCallback((e) => {
-    setIsDragging(true);
-    if (boardMouseAction === 'move') {
-      lastMousePosition.current = { x: e.clientX, y: e.clientY };
-    }
-  }, []);
+  const handleMouseDown = useCallback(
+    (e) => {
+      setIsDragging(true);
+      if (boardMouseAction === 'move') {
+        lastMousePosition.current = { x: e.clientX, y: e.clientY };
+      }
+    },
+    [boardMouseAction]
+  );
 
   const handleMouseClick = (col: number, row: number) => {
     setIsDragging(false);
@@ -106,7 +109,7 @@ function GameBoard() {
         });
       }
     },
-    [isDragging, boardMouseAction]
+    [isDragging, boardMouseAction, zoomLevel]
   );
 
   const isEditMode = boardMouseAction === 'draw' || boardMouseAction === 'erase';

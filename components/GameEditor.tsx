@@ -14,11 +14,11 @@ import { useDispatch } from 'react-redux';
 
 import { checkApiConnection } from '../store/game/gameApiActions';
 import { resetSaveData, setBoardMouseAction, setZoomLevel } from '../store/game/gameSlice';
+import { useAppSelector } from '../store/hooks';
 
+import { getZoomLevel } from './Camera';
 import LoadBoardModal from './LoadBoardModal';
 import SaveBoardModal from './SaveBoardModal';
-import { useAppSelector } from '../store/hooks';
-import { getZoomLevel } from './Camera';
 
 function calculateZoomPercentage(zoomLevel: number) {
   const percentage = (1 - (zoomLevel - 5) / 15) * 100;

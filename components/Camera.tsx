@@ -3,8 +3,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { CameraHelper3JS, Group } from './ThreeJSElements';
 
-const minCameraPosition = -6;
-const maxCameraPosition = 6;
 const minZoomLevel = 0.5;
 const maxZoomLevel = 20;
 
@@ -25,7 +23,12 @@ interface Position {
   y: number;
 }
 
-export function Camera({ targetPosition, targetZoom }) {
+interface CameraProps {
+  targetPosition: Position;
+  targetZoom: number;
+}
+
+export function Camera({ targetPosition, targetZoom }: CameraProps) {
   const { camera } = useThree();
   const currentZoomRef = useRef(camera.position.z);
   const currentPositionRef = useRef({ x: camera.position.x, y: camera.position.y });

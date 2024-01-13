@@ -7,9 +7,9 @@ import {
 } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 
+import { nextGeneration, setGenerationsPerAdvance } from '../store/game/gameSlice';
 import { useAppSelector } from '../store/hooks';
 import { AppDispatch } from '../store/store';
-import { nextGeneration, setGenerationsPerAdvance } from '../store/game/gameSlice';
 
 const GameControls = () => {
   const dispatch = useDispatch<AppDispatch>();
