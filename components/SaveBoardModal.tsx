@@ -69,7 +69,7 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
         <Text>Living Cells: {livingCellCount}</Text>
       </Card>
 
-      <Group position="right" justify="flex-end">
+      <Group justify="flex-end">
         <Button onClick={onClose} variant="transparent">
           Cancel
         </Button>
