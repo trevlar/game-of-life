@@ -21,9 +21,9 @@ import {
   IconSettings,
   IconSun,
 } from '@tabler/icons-react';
+import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 
-import GameBoard from '../components/GameBoard';
 import GameControls from '../components/GameControls';
 import GameEditor from '../components/GameEditor';
 import GameSettings from '../components/GameSettings';
@@ -36,6 +36,8 @@ const gameSpeeds = {
   normal: 100,
   fast: 50,
 };
+
+const GameBoard = dynamic(() => import('../components/GameBoard'), { ssr: false });
 
 function Home() {
   const dispatch = useAppDispatch();
