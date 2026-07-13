@@ -12,6 +12,8 @@ export const spaceShapeOptions: Array<{ value: SpaceShape; label: string }> = [
 
 export const isFixedTopologyShape = (spaceShape: SpaceShape) => spaceShape !== 'flat';
 
+export const isCurvedSpaceShape = (spaceShape: SpaceShape) => spaceShape !== 'flat';
+
 export const getSpaceShapeLabel = (spaceShape: SpaceShape) => {
   return spaceShapeOptions.find(({ value }) => value === spaceShape)?.label || 'Flat';
 };

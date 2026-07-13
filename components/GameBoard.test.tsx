@@ -27,6 +27,7 @@ jest.mock('@react-three/drei', () => ({
       {children}
     </button>
   ),
+  OrbitControls: () => <div />,
   Preload: () => <div />,
 }));
 
@@ -54,6 +55,7 @@ jest.mock('@react-three/fiber', () => {
 
 jest.mock('./ThreeJSElements', () => ({
   AmbientLight: () => null,
+  CurvedSpaceSurface: () => null,
   DirectionalLight: () => null,
   MeshStandardMaterial: ({ color }) => <span data-color={color} />,
   Group: ({ children }) => <div>{children}</div>,

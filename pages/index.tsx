@@ -22,7 +22,7 @@ import {
   IconSun,
 } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import GameControls from '../components/GameControls';
 import GameEditor from '../components/GameEditor';
@@ -67,8 +67,14 @@ function Home() {
 
   const theme = useMantineTheme();
   const { setColorScheme } = useMantineColorScheme();
+  const [isMounted, setIsMounted] = useState(false);
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
-  const nextColorScheme = computedColorScheme === 'dark' ? 'light' : 'dark';
+  const renderedColorScheme = isMounted ? computedColorScheme : 'light';
+  const nextColorScheme = renderedColorScheme === 'dark' ? 'light' : 'dark';
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isPlaying) {
@@ -124,7 +130,7 @@ function Home() {
                     size="lg"
                     onClick={() => setColorScheme(nextColorScheme)}
                   >
-                    {computedColorScheme === 'dark' ? <IconSun /> : <IconMoon />}
+                    {renderedColorScheme === 'dark' ? <IconSun /> : <IconMoon />}
                   </ActionIcon>
                 </Tooltip>
                 <Menu offset={12} position="bottom-end" withinPortal>

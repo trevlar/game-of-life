@@ -1,5 +1,6 @@
 import { Box } from '@react-three/drei';
 
+import { isCurvedSpaceShape } from '../lib/spaceShapes';
 import { SpaceShape } from '../types/types';
 
 import { MeshStandardMaterial } from './ThreeJSElements';
@@ -28,10 +29,14 @@ const getFlatCellTransform = (rowIndex: number, col: number, boardSize: number) 
   args: [0.18, 0.18, 0.02] as [number, number, number],
 });
 
+const getCurvedCellSize = (boardSize: number) => {
+  return Math.max(0.025, Math.min(0.07, 2.65 / boardSize));
+};
+
 const getTorusCellTransform = (rowIndex: number, col: number, boardSize: number) => {
   const majorRadius = 2.35;
   const minorRadius = 1.05;
-  const cellSize = Math.max(0.025, Math.min(0.07, 2.65 / boardSize));
+  const cellSize = getCurvedCellSize(boardSize);
   const u = ((col + 0.5) / boardSize) * Math.PI * 2;
   const v = ((rowIndex + 0.5) / boardSize) * Math.PI * 2;
   const surfaceOffset = cellSize * 1.15;
@@ -47,6 +52,98 @@ const getTorusCellTransform = (rowIndex: number, col: number, boardSize: number)
   };
 };
 
+const getHorizontalCylinderCellTransform = (rowIndex: number, col: number, boardSize: number) => {
+  const radius = 1.55;
+  const height = 4.4;
+  const cellSize = getCurvedCellSize(boardSize);
+  const u = ((col + 0.5) / boardSize) * Math.PI * 2;
+  const y = (0.5 - (rowIndex + 0.5) / boardSize) * height;
+  const surfaceOffset = cellSize * 1.2;
+
+  return {
+    position: [
+      (radius + surfaceOffset) * Math.cos(u),
+      y,
+      (radius + surfaceOffset) * Math.sin(u),
+    ] as [number, number, number],
+    args: [cellSize, cellSize, cellSize] as [number, number, number],
+  };
+};
+
+const getVerticalCylinderCellTransform = (rowIndex: number, col: number, boardSize: number) => {
+  const radius = 1.4;
+  const width = 4.8;
+  const cellSize = getCurvedCellSize(boardSize);
+  const v = ((rowIndex + 0.5) / boardSize) * Math.PI * 2;
+  const x = ((col + 0.5) / boardSize - 0.5) * width;
+  const surfaceOffset = cellSize * 1.2;
+
+  return {
+    position: [
+      x,
+      (radius + surfaceOffset) * Math.cos(v),
+      (radius + surfaceOffset) * Math.sin(v),
+    ] as [number, number, number],
+    args: [cellSize, cellSize, cellSize] as [number, number, number],
+  };
+};
+
+const getMobiusCellTransform = (rowIndex: number, col: number, boardSize: number) => {
+  const majorRadius = 2.15;
+  const stripWidth = 1.25;
+  const cellSize = getCurvedCellSize(boardSize);
+  const u = ((col + 0.5) / boardSize) * Math.PI * 2;
+  const v = ((rowIndex + 0.5) / boardSize - 0.5) * stripWidth;
+  const surfaceOffset = cellSize * 1.2;
+  const twistedWidth = v + surfaceOffset;
+  const radialOffset = majorRadius + twistedWidth * Math.cos(u / 2);
+
+  return {
+    position: [
+      radialOffset * Math.cos(u),
+      radialOffset * Math.sin(u),
+      twistedWidth * Math.sin(u / 2),
+    ] as [number, number, number],
+    args: [cellSize, cellSize, cellSize] as [number, number, number],
+  };
+};
+
+const getKleinBottleCellTransform = (rowIndex: number, col: number, boardSize: number) => {
+  const cellSize = getCurvedCellSize(boardSize);
+  const scale = 0.85;
+  const u = ((col + 0.5) / boardSize) * Math.PI * 2;
+  const v = ((rowIndex + 0.5) / boardSize) * Math.PI * 2;
+  const tube = Math.cos(u / 2) * Math.sin(v) - Math.sin(u / 2) * Math.sin(2 * v) + cellSize * 1.2;
+  const radialOffset = 2.1 + tube;
+
+  return {
+    position: [
+      radialOffset * Math.cos(u) * scale,
+      radialOffset * Math.sin(u) * scale,
+      (Math.sin(u / 2) * Math.sin(v) + Math.cos(u / 2) * Math.sin(2 * v)) * scale,
+    ] as [number, number, number],
+    args: [cellSize, cellSize, cellSize] as [number, number, number],
+  };
+};
+
+const getProjectivePlaneCellTransform = (rowIndex: number, col: number, boardSize: number) => {
+  const cellSize = getCurvedCellSize(boardSize);
+  const scale = 2.1;
+  const u = ((rowIndex + 0.5) / boardSize) * Math.PI;
+  const v = ((col + 0.5) / boardSize) * Math.PI * 2;
+  const sinU = Math.sin(u);
+  const surfaceOffset = cellSize * 1.2;
+
+  return {
+    position: [
+      Math.sin(2 * u) * sinU * Math.cos(v) * scale,
+      sinU * Math.sin(2 * v) * scale,
+      (Math.cos(u) * Math.sin(2 * v) + surfaceOffset) * scale,
+    ] as [number, number, number],
+    args: [cellSize, cellSize, cellSize] as [number, number, number],
+  };
+};
+
 const getCellTransform = (
   rowIndex: number,
   col: number,
@@ -55,6 +152,26 @@ const getCellTransform = (
 ) => {
   if (spaceShape === 'torus') {
     return getTorusCellTransform(rowIndex, col, boardSize);
+  }
+
+  if (spaceShape === 'horizontal-cylinder') {
+    return getHorizontalCylinderCellTransform(rowIndex, col, boardSize);
+  }
+
+  if (spaceShape === 'vertical-cylinder') {
+    return getVerticalCylinderCellTransform(rowIndex, col, boardSize);
+  }
+
+  if (spaceShape === 'mobius-strip') {
+    return getMobiusCellTransform(rowIndex, col, boardSize);
+  }
+
+  if (spaceShape === 'klein-bottle') {
+    return getKleinBottleCellTransform(rowIndex, col, boardSize);
+  }
+
+  if (spaceShape === 'projective-plane') {
+    return getProjectivePlaneCellTransform(rowIndex, col, boardSize);
   }
 
   return getFlatCellTransform(rowIndex, col, boardSize);
@@ -97,7 +214,7 @@ function GameCell({
     e.stopPropagation();
   };
 
-  if (spaceShape === 'torus') {
+  if (isCurvedSpaceShape(spaceShape)) {
     return (
       <mesh
         position={position}

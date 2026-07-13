@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core';
 import Head from 'next/head';
 import { Provider } from 'react-redux';
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 import '@mantine/core/styles/global.css';
 import '@mantine/core/styles.css';
 import '../styles/index.css';
@@ -10,11 +10,11 @@ import { store } from '../store/store';
 
 export const reportWebVitals = (onPerfEntry) => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    getCLS(onPerfEntry);
-    getFID(onPerfEntry);
-    getFCP(onPerfEntry);
-    getLCP(onPerfEntry);
-    getTTFB(onPerfEntry);
+    onCLS(onPerfEntry);
+    onFCP(onPerfEntry);
+    onINP(onPerfEntry);
+    onLCP(onPerfEntry);
+    onTTFB(onPerfEntry);
   }
 };
 

@@ -1,14 +1,15 @@
-import { Preload } from '@react-three/drei';
+import { OrbitControls, Preload } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { isCurvedSpaceShape } from '../lib/spaceShapes';
 import { setBoardAtLocation, setZoomLevel } from '../store/game/gameSlice';
 import { useAppSelector } from '../store/hooks';
 
 import { Camera, getMaxZoomLevel } from './Camera';
 import GameCell from './GameCell';
-import { AmbientLight, DirectionalLight, TorusSurface } from './ThreeJSElements';
+import { AmbientLight, CurvedSpaceSurface, DirectionalLight } from './ThreeJSElements';
 
 const gameBoardMouseCursor = {
   move: ['grab', 'grabbing'],
@@ -41,6 +42,8 @@ function GameBoard() {
   const [isMouseOverCanvas, setIsMouseOverCanvas] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const lastMousePosition = useRef({ x: 0, y: 0 });
+  const isCurvedBoard = isCurvedSpaceShape(spaceShape);
+  const isOrbitMode = isCurvedBoard && boardMouseAction === 'move';
 
   const board = useMemo(() => {
     return Array.from({ length: boardSize }, () => Array.from({ length: boardSize }, () => false));
@@ -51,6 +54,10 @@ function GameBoard() {
   };
 
   const handleWheel = (event) => {
+    if (isOrbitMode) {
+      return;
+    }
+
     if (isMouseOverCanvas) {
       let zoomChange = event.deltaY * -0.005;
       if (zoomLevel < 1) {
@@ -66,12 +73,16 @@ function GameBoard() {
 
   const handleMouseDown = useCallback(
     (e) => {
+      if (isOrbitMode) {
+        return;
+      }
+
       setIsDragging(true);
       if (boardMouseAction === 'move') {
         lastMousePosition.current = { x: e.clientX, y: e.clientY };
       }
     },
-    [boardMouseAction]
+    [boardMouseAction, isOrbitMode]
   );
 
   const handleMouseClick = (col: number, row: number) => {
@@ -92,6 +103,10 @@ function GameBoard() {
 
   const handleMouseMove = useCallback(
     (e) => {
+      if (isOrbitMode) {
+        return;
+      }
+
       if (boardMouseAction === 'move' && isDragging) {
         const dx = e.clientX - lastMousePosition.current.x;
         const dy = e.clientY - lastMousePosition.current.y;
@@ -110,7 +125,7 @@ function GameBoard() {
         });
       }
     },
-    [isDragging, boardMouseAction, zoomLevel]
+    [isDragging, boardMouseAction, zoomLevel, isOrbitMode]
   );
 
   const isEditMode = boardMouseAction === 'draw' || boardMouseAction === 'erase';
@@ -144,9 +159,24 @@ function GameBoard() {
       <Suspense fallback={null}>
         <Preload all />
         <Camera targetZoom={zoomLevel} targetPosition={cameraPosition} />
+        {isCurvedBoard && (
+          <OrbitControls
+            enabled={isOrbitMode}
+            enableDamping
+            dampingFactor={0.08}
+            rotateSpeed={0.65}
+            zoomSpeed={0.8}
+            panSpeed={0.6}
+            minDistance={2.4}
+            maxDistance={9}
+            makeDefault
+          />
+        )}
         <AmbientLight intensity={0.5} />
         <DirectionalLight position={[0, 0, 5]} intensity={1} />
-        {spaceShape === 'torus' && <TorusSurface color={deadCellColor} />}
+        {isCurvedSpaceShape(spaceShape) && (
+          <CurvedSpaceSurface color={deadCellColor} spaceShape={spaceShape} />
+        )}
         {board.map((row, rowIndex) =>
           row.map((_, col) => (
             <GameCell
