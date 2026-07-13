@@ -5,7 +5,15 @@ import { RootState } from '../store';
 
 import { setBoardId, setBoards, setSaveEnabled, setSelectedBoard } from './gameSlice';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.REACT_APP_API_BASE_URL || '';
+
+const getErrorPayload = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data || { message: error.message };
+  }
+
+  return { message: error instanceof Error ? error.message : 'Unknown error' };
+};
 
 export const checkApiConnection = createAsyncThunk(
   'boards/checkApiConnection',
@@ -19,7 +27,7 @@ export const checkApiConnection = createAsyncThunk(
 
       return response.data.message;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(getErrorPayload(error));
     }
   }
 );
@@ -34,13 +42,13 @@ export const loadBoards = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(getErrorPayload(error));
     }
   }
 );
 
 interface SaveBoardResponse {
-  id: string;
+  id: string | number;
 }
 
 export const saveBoard = createAsyncThunk<
@@ -50,14 +58,13 @@ export const saveBoard = createAsyncThunk<
     state: RootState; // Define the type of the state
   }
 >('boards/saveBoard', async (_, { getState, dispatch, rejectWithValue }) => {
-  const state = getState() as any;
+  const state = getState();
   const gameState = state.game;
 
   const boardData = {
     id: gameState.id || null,
     title: gameState.title,
     description: gameState.description,
-    board: gameState.board,
     generations: gameState.generations,
     isPlaying: gameState.isPlaying,
     livingCells: gameState.livingCells,
@@ -67,10 +74,13 @@ export const saveBoard = createAsyncThunk<
       gameSpeed: gameState.gameSpeed,
       generationsPerAdvance: gameState.generationsPerAdvance,
       wrapAround: gameState.continuousEdges,
+      spaceShape: gameState.spaceShape,
     },
   };
   try {
-    const response = await axios.post(`${BASE_URL}/api/board`, boardData);
+    const response = gameState.id
+      ? await axios.put(`${BASE_URL}/api/board/${gameState.id}`, boardData)
+      : await axios.post(`${BASE_URL}/api/board`, boardData);
 
     const boardId = response.data.id;
 
@@ -78,14 +88,14 @@ export const saveBoard = createAsyncThunk<
 
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data);
+    return rejectWithValue(getErrorPayload(error));
   }
 });
 
 // Async thunk for selecting a board
 export const selectBoard = createAsyncThunk(
   'boards/selectBoard',
-  async (boardId: string | null, { dispatch, rejectWithValue }) => {
+  async (boardId: string | number | null, { dispatch, rejectWithValue }) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/board/${boardId}`);
 
@@ -93,7 +103,7 @@ export const selectBoard = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(getErrorPayload(error));
     }
   }
 );

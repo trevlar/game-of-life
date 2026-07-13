@@ -12,7 +12,7 @@ export default class MyDocument extends Document {
           <meta name="description" content="Web site created using create-react-app" />
           <link rel="apple-touch-icon" href="/logo192.png" />
           <link rel="manifest" href="/manifest.json" />
-          <ColorSchemeScript defaultColorScheme="auto" />
+          <ColorSchemeScript defaultColorScheme="light" />
         </Head>
         <body>
           <Main />

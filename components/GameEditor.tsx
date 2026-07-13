@@ -10,11 +10,10 @@ import {
   IconDownload,
 } from '@tabler/icons-react';
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { checkApiConnection } from '../store/game/gameApiActions';
 import { resetSaveData, setBoardMouseAction, setZoomLevel } from '../store/game/gameSlice';
-import { useAppSelector } from '../store/hooks';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 import { getZoomLevel } from './Camera';
 import LoadBoardModal from './LoadBoardModal';
@@ -28,13 +27,13 @@ function calculateZoomPercentage(zoomLevel: number) {
 
 function GameEditor() {
   const { isSaveEnabled, boardMouseAction, zoomLevel } = useAppSelector((state) => state.game);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
 
   useEffect(() => {
-    checkApiConnection();
-  }, []);
+    dispatch(checkApiConnection());
+  }, [dispatch]);
 
   const handleShowSaveModal = (isNew = false) => {
     setShowSaveModal(true);
@@ -107,6 +106,7 @@ function GameEditor() {
         <Group justify="flex-end">
           <Group>
             <ActionIcon
+              aria-label="Move board"
               variant={boardMouseAction === 'move' ? 'filled' : 'light'}
               color="blue"
               radius="xl"
@@ -115,6 +115,7 @@ function GameEditor() {
               <IconHandMove />
             </ActionIcon>
             <ActionIcon
+              aria-label="Draw cells"
               variant={boardMouseAction === 'draw' ? 'filled' : 'light'}
               color="blue"
               radius="xl"
@@ -123,6 +124,7 @@ function GameEditor() {
               <IconPencil />
             </ActionIcon>
             <ActionIcon
+              aria-label="Erase cells"
               variant={boardMouseAction === 'erase' ? 'filled' : 'light'}
               color="blue"
               radius="xl"
@@ -134,6 +136,7 @@ function GameEditor() {
 
           <Group justify="flex-end">
             <ActionIcon
+              aria-label="Zoom out"
               variant="outline"
               color="blue"
               radius="xl"
@@ -142,6 +145,7 @@ function GameEditor() {
               <IconMinus />
             </ActionIcon>
             <ActionIcon
+              aria-label="Zoom in"
               variant="outline"
               color="blue"
               radius="xl"

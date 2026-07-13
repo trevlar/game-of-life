@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Provider store={store}>
-        <MantineProvider>
+        <MantineProvider defaultColorScheme="light">
           <Component {...pageProps} />
         </MantineProvider>
       </Provider>

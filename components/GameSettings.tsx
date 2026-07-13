@@ -11,6 +11,7 @@ import {
   ColorPicker,
   ColorSwatch,
   Group,
+  Select,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -20,6 +21,7 @@ import {
 } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 
+import { isFixedTopologyShape, spaceShapeOptions } from '../lib/spaceShapes';
 import {
   setGameSpeed,
   setBoardSize,
@@ -28,8 +30,12 @@ import {
   setBackgroundColor,
   setContinuousEdges,
   clearBoard,
+  setSpaceShape,
 } from '../store/game/gameSlice';
 import { useAppSelector } from '../store/hooks';
+import { SpaceShape } from '../types/types';
+
+import PatternTools from './PatternTools';
 
 const SPEEDS = [
   {
@@ -64,8 +70,15 @@ const SPEEDS = [
 const GameSettings = () => {
   const dispatch = useDispatch();
   const theme = useMantineTheme();
-  const { gameSpeed, boardSize, continuousEdges, liveCellColor, deadCellColor, backgroundColor } =
-    useAppSelector((state) => state.game);
+  const {
+    gameSpeed,
+    boardSize,
+    continuousEdges,
+    spaceShape,
+    liveCellColor,
+    deadCellColor,
+    backgroundColor,
+  } = useAppSelector((state) => state.game);
 
   const handleSpeedChange = (value: string) => {
     dispatch(setGameSpeed({ gameSpeed: value }));
@@ -87,6 +100,10 @@ const GameSettings = () => {
     dispatch(setDeadCellColor({ deadCellColor: color }));
   };
 
+  const handleSpaceShapeChange = (value: string) => {
+    dispatch(setSpaceShape({ spaceShape: value as SpaceShape }));
+  };
+
   return (
     <Stack p="sm" gap="lg">
       <Text>Game Settings</Text>
@@ -99,6 +116,13 @@ const GameSettings = () => {
         step={1}
       />
       <SegmentedControl value={gameSpeed} onChange={handleSpeedChange} data={SPEEDS} />
+      <Select
+        label="Space Shape"
+        data={spaceShapeOptions}
+        value={spaceShape}
+        onChange={(value) => handleSpaceShapeChange(value || 'flat')}
+        comboboxProps={{ withinPortal: false }}
+      />
       <Stack gap="xs">
         <Group>
           <Text>Live Cell Color</Text>
@@ -132,6 +156,7 @@ const GameSettings = () => {
         label="Continuous Edges"
         checked={continuousEdges}
         onChange={() => dispatch(setContinuousEdges({ continuousEdges: !continuousEdges }))}
+        disabled={isFixedTopologyShape(spaceShape)}
         color={theme.colors.blue[5]}
       />
       <Button
@@ -141,6 +166,7 @@ const GameSettings = () => {
       >
         Reset Board
       </Button>
+      <PatternTools />
     </Stack>
   );
 };

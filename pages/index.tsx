@@ -1,15 +1,26 @@
 import {
+  ActionIcon,
   AppShell,
   Container,
   Group,
   Menu,
+  ScrollArea,
   Switch,
   Text,
+  Tooltip,
   rem,
+  useComputedColorScheme,
+  useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
-import { IconPlayerPlayFilled, IconPlayerStopFilled, IconSettings } from '@tabler/icons-react';
+import {
+  IconMoon,
+  IconPlayerPlayFilled,
+  IconPlayerStopFilled,
+  IconSettings,
+  IconSun,
+} from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
 
 import GameBoard from '../components/GameBoard';
@@ -53,6 +64,9 @@ function Home() {
   }, [viewport]);
 
   const theme = useMantineTheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+  const nextColorScheme = computedColorScheme === 'dark' ? 'light' : 'dark';
 
   useEffect(() => {
     if (isPlaying) {
@@ -101,13 +115,25 @@ function Home() {
                     )
                   }
                 />
-                <Menu offset={12}>
+                <Tooltip label={`Switch to ${nextColorScheme} mode`}>
+                  <ActionIcon
+                    aria-label={`Switch to ${nextColorScheme} mode`}
+                    variant="subtle"
+                    size="lg"
+                    onClick={() => setColorScheme(nextColorScheme)}
+                  >
+                    {computedColorScheme === 'dark' ? <IconSun /> : <IconMoon />}
+                  </ActionIcon>
+                </Tooltip>
+                <Menu offset={12} position="bottom-end" withinPortal>
                   <Menu.Target aria-label="settings">
                     <IconSettings style={{ width: rem(35), height: rem(35) }} />
                   </Menu.Target>
 
                   <Menu.Dropdown>
-                    <GameSettings />
+                    <ScrollArea.Autosize mah="calc(100vh - 96px)" type="always">
+                      <GameSettings />
+                    </ScrollArea.Autosize>
                   </Menu.Dropdown>
                 </Menu>
               </Group>

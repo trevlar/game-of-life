@@ -5,7 +5,10 @@ import {
   trimLiveCellsToSize,
   countLivingCellsInBoard,
   deepCopyLivingCells,
+  isCellAlive,
+  setCellAlive,
 } from '../../lib/gameLogic';
+import { isFixedTopologyShape } from '../../lib/spaceShapes';
 import { GameState, GamePayload, SettingsPayload, SavedGame } from '../../types/types';
 
 const defaultBoardSize = 38;
@@ -17,7 +20,7 @@ const defaultDeadCellColor = '#FFFFFF';
 const initialState: GameState = {
   title: '',
   description: '',
-  livingCells: [[]],
+  livingCells: [],
   generations: 0,
   isPlaying: false,
   boardSize: defaultBoardSize,
@@ -28,7 +31,8 @@ const initialState: GameState = {
   backgroundColor: defaultBackgroundColor,
   zoomLevel: 5,
   boardMouseAction: 'move',
-  continuousEdges: false,
+  continuousEdges: true,
+  spaceShape: 'flat',
   generationsPerAdvance: 1,
   livingCellCount: 0,
   boardList: [],
@@ -51,13 +55,14 @@ export const gameSlice = createSlice({
         return;
       }
 
-      const { livingCells, boardSize, continuousEdges } = state;
+      const { livingCells, boardSize, continuousEdges, spaceShape } = state;
       let newLivingCells = deepCopyLivingCells(livingCells);
       for (let i = 0; i < steps; i++) {
         newLivingCells = processNextGenByLiveCellsAndNeighbors(
           newLivingCells,
           boardSize,
-          continuousEdges
+          continuousEdges,
+          spaceShape
         );
       }
       state.livingCells = newLivingCells;
@@ -69,13 +74,18 @@ export const gameSlice = createSlice({
       const game = action.payload.game;
       state.id = game.id;
       state.title = game.title;
-      state.description = game.description;
+      state.description = game.description || game.boardDesc || '';
       state.generations = game.generations;
       state.isPlaying = game.isPlaying;
       state.boardSize = game?.settings?.boardSize || defaultBoardSize;
       state.gameSpeed = game?.settings?.gameSpeed || 'normal';
-      state.continuousEdges = game?.settings?.wrapAround || false;
-      state.generationsPerAdvance = game?.settings?.generationsPerAdvance || 1;
+      state.continuousEdges = game?.settings?.wrapAround ?? initialState.continuousEdges;
+      state.spaceShape = game?.settings?.spaceShape || initialState.spaceShape;
+      if (isFixedTopologyShape(state.spaceShape)) {
+        state.continuousEdges = true;
+      }
+      state.generationsPerAdvance =
+        game?.settings?.generationsPerAdvance || game?.settings?.gensPerAdvance || 1;
       state.livingCells = game.livingCells
         ? JSON.parse(game.livingCells)
         : deepCopyLivingCells(game?.board || []);
@@ -102,17 +112,20 @@ export const gameSlice = createSlice({
 
       const { row, col } = action.payload.cell || { row: 0, col: 0 };
 
-      const newCells = state.livingCells.map((row) => [...row]);
-      if (boardMouseAction === 'erase' && newCells[col]?.[row]) {
-        delete newCells[col][row];
-        state.livingCells = newCells;
-        state.livingCellCount = state.livingCellCount > 0 ? state.livingCellCount - 1 : 0;
-      } else if (boardMouseAction === 'draw') {
-        newCells[col] = newCells[col] || [];
-        newCells[col][row] = true;
-        state.livingCells = newCells;
-        state.livingCellCount = state.livingCellCount + 1;
+      const wasAlive = isCellAlive(state.livingCells, row, col);
+      if (boardMouseAction === 'erase' && wasAlive) {
+        state.livingCells = setCellAlive(state.livingCells, row, col, false);
+        state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
+      } else if (boardMouseAction === 'draw' && !wasAlive) {
+        state.livingCells = setCellAlive(state.livingCells, row, col, true);
+        state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
       }
+    },
+    setLivingCells: (state, action: PayloadAction<{ livingCells: boolean[][] }>) => {
+      state.id = null;
+      state.generations = 0;
+      state.livingCells = trimLiveCellsToSize(action.payload.livingCells, state.boardSize);
+      state.livingCellCount = countLivingCellsInBoard(state.livingCells, state.boardSize);
     },
     setGameSpeed: (state, action: PayloadAction<SettingsPayload>) => {
       state.gameSpeed = action.payload.gameSpeed || 'normal';
@@ -139,7 +152,18 @@ export const gameSlice = createSlice({
       state.boardMouseAction = action.payload.action || 'move';
     },
     setContinuousEdges: (state, action: PayloadAction<SettingsPayload>) => {
-      state.continuousEdges = action.payload.continuousEdges || false;
+      if (isFixedTopologyShape(state.spaceShape)) {
+        state.continuousEdges = true;
+        return;
+      }
+
+      state.continuousEdges = action.payload.continuousEdges ?? initialState.continuousEdges;
+    },
+    setSpaceShape: (state, action: PayloadAction<SettingsPayload>) => {
+      state.spaceShape = action.payload.spaceShape || initialState.spaceShape;
+      if (isFixedTopologyShape(state.spaceShape)) {
+        state.continuousEdges = true;
+      }
     },
     setGenerationsPerAdvance: (state, action: PayloadAction<SettingsPayload>) => {
       state.generationsPerAdvance = action.payload.generationsPerAdvance || 1;
@@ -171,6 +195,7 @@ export const {
   setBoards,
   setBoardSize,
   setContinuousEdges,
+  setSpaceShape,
   setLiveCellColor,
   setDeadCellColor,
   setBackgroundColor,
@@ -183,6 +208,7 @@ export const {
   setTitle,
   togglePlay,
   setSaveEnabled,
+  setLivingCells,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -11,7 +11,7 @@ This application allows me to demonstrate my ability to build a React applicatio
 - [Redux Toolkit](https://redux-toolkit.js.org/): The official library for Redux stores.
 - [React Redux](https://react-redux.js.org/): The official React bindings for Redux.
 - [Redux Thunk](https://redux.js.org/usage/writing-logic-thunks): A middleware for Redux that allows asynchronous logic to be dispatched.
-- [Three.js](https://github.com/mrdoob/three.js/) Light-weight, cross-browser, general purpose 3D library that uses a WebGL renderer.  
+- [Three.js](https://github.com/mrdoob/three.js/) Light-weight, cross-browser, general purpose 3D library that uses a WebGL renderer.
 - [React Three Fiber](https://github.com/pmndrs/react-three-fiber) Self contained, reusable React components for three.js.
 - [Mantine UI](https://mantine.dev/): A React UI component library.
 
@@ -21,7 +21,7 @@ This application allows me to demonstrate my ability to build a React applicatio
 
 Before starting ensure that you have the following:
 
-- You have installed the latest version of [Node.js and npm](https://nodejs.org/en/download/).
+- You have installed [Node.js](https://nodejs.org/en/download/) and [pnpm](https://pnpm.io/installation).
 - You have downloaded or cloned the [repository](https://github.com/trevlar/game-of-life).
 
 ### Installing
@@ -29,8 +29,8 @@ Before starting ensure that you have the following:
 To install the application, follow these steps:
 
 1. Open a terminal and navigate to the root directory of the repository.
-2. Run `npm install` to install the dependencies.
-3. Run `npm start` to start the application.
+2. Run `pnpm install` to install the dependencies.
+3. Run `pnpm dev` to start the application locally.
 4. Open a browser and navigate to `http://localhost:3000`.
 5. Update directions to get the server db running locally.
 

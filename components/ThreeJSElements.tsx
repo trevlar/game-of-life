@@ -8,14 +8,24 @@ export const AmbientLight = ({ intensity }: LightProps) => <ambientLight intensi
 export const DirectionalLight = ({ intensity, position }: LightProps) => (
   <directionalLight intensity={intensity} position={position} />
 );
+
 interface MeshStandardMaterialProps {
   color: string;
   attach: string;
-  opacity?: number;
-  transparent?: boolean;
 }
-export const MeshStandardMaterial = ({ color, attach, ...rest }: MeshStandardMaterialProps) => (
-  <meshStandardMaterial color={color} attach={attach} {...rest} />
+export const MeshStandardMaterial = ({ color, attach }: MeshStandardMaterialProps) => (
+  <meshStandardMaterial color={color} attach={attach} />
+);
+
+interface TorusSurfaceProps {
+  color: string;
+}
+
+export const TorusSurface = ({ color }: TorusSurfaceProps) => (
+  <mesh>
+    <torusGeometry args={[2.35, 1.05, 64, 160]} />
+    <MeshStandardMaterial color={color} attach="material" />
+  </mesh>
 );
 
 interface GroupProps {

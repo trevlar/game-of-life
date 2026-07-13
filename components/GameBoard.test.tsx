@@ -1,47 +1,61 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { render, fireEvent, screen } from '@testing-library/react';
+import React from 'react';
 import { Provider } from 'react-redux';
 
-import gameReducer from '../store/game/gameSlice';
+import gameReducer, { setBoardMouseAction } from '../store/game/gameSlice';
 
 import GameBoard from './GameBoard';
 
 jest.mock('@react-three/drei', () => ({
-  Box: ({ name, onPointerDown, onPointerEnter }) => (
+  Box: ({ children, name, onClick, onPointerDown, onPointerOver }) => (
     <button
+      onClick={(e) => {
+        e.preventDefault();
+        onClick({ stopPropagation: jest.fn() });
+      }}
       onMouseDown={(e) => {
         e.preventDefault();
-        onPointerDown();
+        onPointerDown({ clientX: 0, clientY: 0, stopPropagation: jest.fn() });
       }}
       onMouseEnter={(e) => {
         e.preventDefault();
-        onPointerEnter();
+        onPointerOver({ stopPropagation: jest.fn() });
       }}
     >
       {name}
+      {children}
     </button>
   ),
   Preload: () => <div />,
-  ScrollControls: ({ children }) => <div>{children}</div>,
 }));
 
-jest.mock('@react-three/fiber', () => ({
-  Canvas: ({ children }) => <div>{children}</div>,
-  useThree: () => ({
-    camera: {
-      zoom: 1,
-      position: {
-        z: 1,
+jest.mock('@react-three/fiber', () => {
+  const Canvas = React.forwardRef<HTMLDivElement, { children: React.ReactNode }>(function Canvas(
+    { children },
+    ref
+  ) {
+    return <div ref={ref}>{children}</div>;
+  });
+
+  return {
+    Canvas,
+    useThree: () => ({
+      camera: {
+        zoom: 1,
+        position: {
+          z: 1,
+        },
       },
-    },
-    set: () => null,
-  }),
-}));
+      set: () => null,
+    }),
+  };
+});
 
 jest.mock('./ThreeJSElements', () => ({
   AmbientLight: () => null,
   DirectionalLight: () => null,
-  MeshStandardMaterial: (props) => <div data-ambient-light={props.color} />,
+  MeshStandardMaterial: ({ color }) => <span data-color={color} />,
   Group: ({ children }) => <div>{children}</div>,
   CameraHelper3JS: () => null,
 }));
@@ -71,36 +85,35 @@ describe('GameBoard', () => {
 
   it('renders without crashing', async () => {
     renderGameboard();
+    expect(screen.getByRole('button', { name: /cell-0-0-dead/i })).toBeInTheDocument();
   });
 
-  it('toggles cell state on mouse down', async () => {
+  it('does not draw while move mode is selected', async () => {
     renderGameboard();
 
-    const cell0 = await screen.findByRole('button', { name: 'cell-0-0-dead' });
-    fireEvent.mouseDown(cell0);
+    fireEvent.click(screen.getByRole('button', { name: /cell-2-1-dead/i }));
 
-    expect(store.getState().game.livingCells).toContain('0,0');
+    expect(store.getState().game.livingCells[1]?.[2]).toBeUndefined();
   });
 
-  it('does not toggle cell state on mouse enter when mouse is not down', async () => {
+  it('draws a cell when draw mode is selected', async () => {
+    store.dispatch(setBoardMouseAction({ action: 'draw' }));
     renderGameboard();
 
-    const cells = await screen.findByRole('button', { name: 'cell-0-0-dead' });
-    fireEvent.mouseEnter(cells);
+    fireEvent.mouseDown(screen.getByRole('button', { name: /cell-2-1-dead/i }));
 
-    expect(store.getState().game.livingCells).not.toContain('0,0');
+    expect(store.getState().game.livingCells[1][2]).toBe(true);
+    expect(store.getState().game.livingCellCount).toBe(1);
   });
 
-  it('toggles cell state on mouse enter when mouse is down', async () => {
+  it('draws while dragging in draw mode', async () => {
+    store.dispatch(setBoardMouseAction({ action: 'draw' }));
     renderGameboard();
 
-    const cell0 = await screen.findByRole('button', { name: 'cell-0-0-dead' });
-    fireEvent.mouseDown(cell0);
-    const cell1 = await screen.findByRole('button', { name: 'cell-0-1-dead' });
-    fireEvent.mouseEnter(cell1);
-    fireEvent.mouseDown(cell0);
+    fireEvent.mouseDown(screen.getByRole('button', { name: /cell-2-1-dead/i }));
+    fireEvent.mouseEnter(screen.getByRole('button', { name: /cell-3-1-dead/i }));
 
-    expect(store.getState().game.livingCells).toContain('0,1');
-    expect(store.getState().game.livingCells).not.toContain('0,0');
+    expect(store.getState().game.livingCells[1][2]).toBe(true);
+    expect(store.getState().game.livingCells[1][3]).toBe(true);
   });
 });

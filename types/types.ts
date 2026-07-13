@@ -1,5 +1,14 @@
+export type SpaceShape =
+  | 'flat'
+  | 'torus'
+  | 'horizontal-cylinder'
+  | 'vertical-cylinder'
+  | 'mobius-strip'
+  | 'klein-bottle'
+  | 'projective-plane';
+
 export interface GameState {
-  id?: string | null;
+  id?: string | number | null;
   title: string;
   description: string;
   livingCells: boolean[][];
@@ -14,6 +23,7 @@ export interface GameState {
   backgroundColor: string;
   zoomLevel: number;
   continuousEdges: boolean;
+  spaceShape: SpaceShape;
   generationsPerAdvance: number;
   livingCellCount: number;
   boardList: SavedGame[];
@@ -26,9 +36,10 @@ export type Cell = {
 };
 
 export interface SavedGame {
-  id: string;
+  id: string | number;
   title: string;
-  description: string;
+  description?: string;
+  boardDesc?: string | null;
   livingCells: string;
   generations: number;
   isPlaying: boolean;
@@ -39,7 +50,7 @@ export interface SavedGame {
 }
 
 export interface GamePayload {
-  id?: string;
+  id?: string | number;
   title?: string;
   description?: string;
   steps?: number;
@@ -54,7 +65,9 @@ export interface SettingsPayload {
   backgroundColor?: string;
   zoomLevel?: number;
   continuousEdges?: boolean;
+  spaceShape?: SpaceShape;
   generationsPerAdvance?: number;
+  gensPerAdvance?: number;
   action?: 'draw' | 'erase' | 'move';
   wrapAround?: boolean;
 }

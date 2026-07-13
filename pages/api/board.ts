@@ -7,27 +7,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const payload = req.body;
 
-      const settings = await prisma.gameSettings.create({
-        data: {
-          boardSize: payload.settings.boardSize,
-          gameSpeed: payload.settings.gameSpeed,
-          gensPerAdvance: payload.settings.generationsPerAdvance,
-          wrapAround: payload.settings.wrapAround,
-        },
-      });
+      const gameState = await prisma.$transaction(async (tx) => {
+        const settings = await tx.gameSettings.create({
+          data: {
+            boardSize: payload.settings.boardSize,
+            gameSpeed: payload.settings.gameSpeed,
+            gensPerAdvance: payload.settings.generationsPerAdvance,
+            wrapAround: payload.settings.wrapAround,
+          },
+        });
 
-      const gameState = await prisma.gameStates.create({
-        data: {
-          title: payload.title,
-          boardDesc: payload.description,
-          livingCells: JSON.stringify(payload.livingCells),
-          settingsId: settings.id,
-          isPlaying: payload.isPlaying,
-          livingCellCount: payload.livingCellCount,
-          board: payload.board || '',
-          virtualBoard: payload.virtualBoard || '',
-          generations: payload.generations,
-        },
+        return tx.gameStates.create({
+          data: {
+            title: payload.title,
+            boardDesc: payload.description,
+            livingCells: JSON.stringify(payload.livingCells),
+            settingsId: settings.id,
+            isPlaying: payload.isPlaying,
+            livingCellCount: payload.livingCellCount,
+            board: payload.board || '',
+            virtualBoard: payload.virtualBoard || '',
+            generations: payload.generations,
+          },
+        });
       });
 
       res.status(200).json({ id: gameState.id });

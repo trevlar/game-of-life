@@ -1,6 +1,6 @@
 import { Modal, Button, Group, Accordion, Stack, Text } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
-import { IconCircleCheckFilled, IconDeviceFloppy } from '@tabler/icons-react';
+import { IconCircleCheckFilled, IconDownload } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -14,7 +14,7 @@ interface LoadBoardModalProps {
 
 const LoadBoardModal: FC<LoadBoardModalProps> = ({ showModal, onClose }) => {
   const focusTrapRef = useFocusTrap(showModal);
-  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+  const [selectedBoardId, setSelectedBoardId] = useState<string | number | null>(null);
 
   const dispatch: AppDispatch = useDispatch();
   const { boardList } = useSelector((state: RootState) => state.game);
@@ -32,10 +32,10 @@ const LoadBoardModal: FC<LoadBoardModalProps> = ({ showModal, onClose }) => {
   };
 
   return (
-    <Modal opened={showModal} onClose={onClose} title="Save Board Configuration" ref={focusTrapRef}>
-      <Accordion variant="contained" radius="md" defaultValue={boardList?.[0]?.title}>
+    <Modal opened={showModal} onClose={onClose} title="Load Board Configuration" ref={focusTrapRef}>
+      <Accordion variant="contained" radius="md" defaultValue={String(boardList?.[0]?.id || '')}>
         {boardList.map((board) => (
-          <Accordion.Item key={board.id} value={board?.title}>
+          <Accordion.Item key={board.id} value={String(board.id)}>
             <Accordion.Control
               icon={
                 selectedBoardId === board.id ? (
@@ -68,7 +68,7 @@ const LoadBoardModal: FC<LoadBoardModalProps> = ({ showModal, onClose }) => {
           onClick={handleSelectBoard}
           disabled={!selectedBoardId}
           variant="gradient"
-          leftSection={<IconDeviceFloppy />}
+          leftSection={<IconDownload />}
         >
           Load Selection
         </Button>

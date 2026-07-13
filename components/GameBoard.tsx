@@ -8,7 +8,7 @@ import { useAppSelector } from '../store/hooks';
 
 import { Camera, getMaxZoomLevel } from './Camera';
 import GameCell from './GameCell';
-import { AmbientLight, DirectionalLight } from './ThreeJSElements';
+import { AmbientLight, DirectionalLight, TorusSurface } from './ThreeJSElements';
 
 const gameBoardMouseCursor = {
   move: ['grab', 'grabbing'],
@@ -34,6 +34,7 @@ function GameBoard() {
     deadCellColor,
     backgroundColor,
     zoomLevel,
+    spaceShape,
   } = useAppSelector((state) => state.game);
   const canvasRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -145,6 +146,7 @@ function GameBoard() {
         <Camera targetZoom={zoomLevel} targetPosition={cameraPosition} />
         <AmbientLight intensity={0.5} />
         <DirectionalLight position={[0, 0, 5]} intensity={1} />
+        {spaceShape === 'torus' && <TorusSurface color={deadCellColor} />}
         {board.map((row, rowIndex) =>
           row.map((_, col) => (
             <GameCell
@@ -154,12 +156,14 @@ function GameBoard() {
                 col,
                 rowIndex,
                 boardSize,
+                spaceShape,
                 livingCells,
                 liveCellColor,
                 deadCellColor,
                 handleMouseClick,
                 handleMouseDown,
                 handleMouseUpOrLeave,
+                setIsLiving,
                 isEditMode,
               }}
             />

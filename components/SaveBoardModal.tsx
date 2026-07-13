@@ -4,6 +4,7 @@ import { IconDeviceFloppy } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { getSpaceShapeLabel } from '../lib/spaceShapes';
 import { saveBoard } from '../store/game/gameApiActions';
 import { setTitle, setDescription } from '../store/game/gameSlice';
 import { AppDispatch, RootState } from '../store/store';
@@ -25,6 +26,7 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
     boardSize,
     gameSpeed,
     continuousEdges,
+    spaceShape,
     generationsPerAdvance,
     livingCellCount,
   } = useSelector((state: RootState) => state.game);
@@ -32,17 +34,29 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
   const [titleValue, setTitleValue] = useState(title);
   const [debouncedTitle] = useDebouncedValue(titleValue, 200);
   useEffect(() => {
+    if (showModal) {
+      setTitleValue(title);
+    }
+  }, [showModal, title]);
+
+  useEffect(() => {
     dispatch(setTitle({ title: debouncedTitle }));
   }, [dispatch, debouncedTitle]);
 
   const [desc, setDesc] = useState(description);
   const [debouncedDesc] = useDebouncedValue(desc, 200);
   useEffect(() => {
-    dispatch(setDescription({ title: debouncedDesc }));
+    if (showModal) {
+      setDesc(description);
+    }
+  }, [showModal, description]);
+
+  useEffect(() => {
+    dispatch(setDescription({ description: debouncedDesc }));
   }, [dispatch, debouncedDesc]);
 
-  const handleSave = () => {
-    dispatch(saveBoard());
+  const handleSave = async () => {
+    await dispatch(saveBoard());
     onClose();
   };
 
@@ -64,6 +78,7 @@ const SaveBoardModal: FC<SaveBoardModalProps> = ({ showModal, onClose }) => {
         <Text>Generations: {generations}</Text>
         <Text>Board Size: {boardSize}</Text>
         <Text>Game Speed: {gameSpeed}</Text>
+        <Text>Space Shape: {getSpaceShapeLabel(spaceShape)}</Text>
         <Text>Continuous Edges: {continuousEdges ? 'Yes' : 'No'}</Text>
         <Text>Generations Per Advance: {generationsPerAdvance}</Text>
         <Text>Living Cells: {livingCellCount}</Text>

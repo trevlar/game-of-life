@@ -5,7 +5,7 @@ import prisma from '../../lib/prisma';
 type SavedGame = {
   id: number;
   title: string;
-  boardDesc: string | null;
+  description: string;
   generations: number;
   isPlaying: boolean;
   livingCellCount: number;
@@ -28,7 +28,16 @@ export default async function handler(
         },
       });
 
-      res.status(200).json(boardsList);
+      res.status(200).json(
+        boardsList.map((board) => ({
+          id: board.id,
+          title: board.title,
+          description: board.boardDesc || '',
+          generations: board.generations,
+          isPlaying: board.isPlaying,
+          livingCellCount: board.livingCellCount,
+        }))
+      );
     } catch (err) {
       console.error('Error getting boards list:', err);
       res.status(500).json({ message: 'Internal Server Error' });
